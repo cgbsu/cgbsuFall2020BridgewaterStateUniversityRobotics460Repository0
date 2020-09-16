@@ -13,11 +13,17 @@ import (
 //function in that new thread. Do all of your work in this function and
 //in other functions that this function calls. don't read from sensors or
 //use actuators frmo main or you will get a panic.
-func robotRunLoop(lightSensor *aio.GroveLightSensorDriver) {
+func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
 	for {
 		sensorVal, err := lightSensor.Read()
 		if err != nil {
 			fmt.Errorf("Error reading sensor %+v", err)
+		}
+		else {
+			if sensorVal >= 3000 {
+				gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
+				gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
+			}
 		}
 		fmt.Println("Light Value is ", sensorVal)
 		time.Sleep(time.Second)
