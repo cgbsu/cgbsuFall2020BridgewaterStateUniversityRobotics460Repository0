@@ -22,6 +22,9 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
 			if sensorVal >= 1000 {
 				gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
 				gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
+			} else {
+				gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
+				gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
 			}
 		}
 		fmt.Println("Light Value is ", sensorVal)
