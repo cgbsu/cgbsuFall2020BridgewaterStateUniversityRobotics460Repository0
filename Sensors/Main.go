@@ -42,7 +42,7 @@ func main() {
 	//I'm calling my robot main loop here. Pass any of the variables we created
 	//above to that function if you need them
 	mainRobotFunc := func() {
-		robotRunLoop(lightSensor)
+		robotRunLoop(gopigo3, lightSensor)
 	}
 
 
