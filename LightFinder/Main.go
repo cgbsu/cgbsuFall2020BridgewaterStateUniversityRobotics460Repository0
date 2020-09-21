@@ -8,11 +8,7 @@ import (
 	"gobot.io/x/gobot/platforms/raspi"
 	"time"
 )
-//robotRunLoop is the main function for the robot, the gobot framework
-//will spawn a new thread in the NewRobot factory functin and run this
-//function in that new thread. Do all of your work in this function and
-//in other functions that this function calls. don't read from sensors or
-//use actuators frmo main or you will get a panic.
+
 func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
 	for {
 		sensorVal, err := lightSensor.Read()
@@ -32,17 +28,10 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
 }
 
 func main() {
-	//We create the adaptors to connect the GoPiGo3 board with the Raspberry Pi 3
-	//also create any sensor drivers here
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
 	lightSensor:= aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1") //AnalogDigital Port 1 is "AD_1_1" this is port 2
-	//end create hardware drivers
 
-	//here we create an anonymous function assigned to a local variable
-	//the robot framework will create a new thread and run this function
-	//I'm calling my robot main loop here. Pass any of the variables we created
-	//above to that function if you need them
 	mainRobotFunc := func() {
 		robotRunLoop(gopigo3, lightSensor)
 	}
