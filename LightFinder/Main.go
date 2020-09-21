@@ -6,7 +6,7 @@ import (
 	"gobot.io/x/gobot/drivers/aio"
 	g "gobot.io/x/gobot/platforms/dexter/gopigo3"
 	"gobot.io/x/gobot/platforms/raspi"
-	"time"
+	//"time"
 )
 
 func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
@@ -15,7 +15,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
 		if err != nil {
 			fmt.Errorf("Error reading sensor %+v", err)
 		}
-		fmt.println( sensorVal )
+		fmt.Println( sensorVal )
 	}
 }
 
