@@ -26,7 +26,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 			gopigo3.SetMotorDps( g.MOTOR_LEFT, -180 )
 			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
 		} 
-
+			// test for systme
 		//fmt.Println( sensor0Data )
 		//fmt.Println( sensor1Data )
 	}
