@@ -28,8 +28,8 @@ func main() {
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
 	//AnalogDigital Port 1 is "AD_1_1" this is port 2
-	lightSensors := [ aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ), 
-			aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ) ]
+	lightSensors := [ 2 ]*aio.GroveLightSensorDriver{ aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ), 
+			aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ) }
 	
 	mainRobotFunc := func() {
 		robotRunLoop( gopigo3, lightSensors )
