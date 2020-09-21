@@ -9,23 +9,30 @@ import (
 	//"time"
 )
 
-func robotRunLoop(gopigo3 *g.Driver, lightSensor *aio.GroveLightSensorDriver) {
+func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
 	for {
-		sensorVal, err := lightSensor.Read()
-		if err != nil {
-			fmt.Errorf("Error reading sensor %+v", err)
+		sensor0Data, error1 := lightSensors[ 0 ].Read()
+		sensor1Data, error1 := lightSensors[ 1 ].Read()
+		if error0 != nil {
+			fmt.Errorf( "Error reading sensor0 %+v", error0 )
 		}
-		fmt.Println( sensorVal )
+		if error1 != nil {
+			fmt.Errorf( "Error reading sensor1 %+v", error1 )
+		}
+//		fmt.Println( sensorVal )
+
 	}
 }
 
 func main() {
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
-	lightSensor:= aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1") //AnalogDigital Port 1 is "AD_1_1" this is port 2
-
+	//AnalogDigital Port 1 is "AD_1_1" this is port 2
+	lightSensors := [ aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ), 
+			aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ) ]
+	
 	mainRobotFunc := func() {
-		robotRunLoop(gopigo3, lightSensor)
+		robotRunLoop( gopigo3, lightSensors )
 	}
 
 
@@ -33,7 +40,7 @@ func main() {
 	//struct (go uses structs and not objects) It takes four parameters
 	robot := gobot.NewRobot("gopigo3sensorChecker", //first a name
 		[]gobot.Connection{raspiAdaptor}, //next a slice of connections to one or more robot controllers
-		[]gobot.Device{gopigo3, lightSensor}, //next a slice of one or more sensors and actuators for the robots
+		[]gobot.Device{gopigo3, lightSensor[ 0 ], lightSensor[ 1 ] }, //next a slice of one or more sensors and actuators for the robots
 		mainRobotFunc, //the variable holding the function to run in a new thread as the main function
 	)
 
