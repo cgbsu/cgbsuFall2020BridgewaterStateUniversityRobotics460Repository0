@@ -19,8 +19,16 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		if error1 != nil {
 			fmt.Errorf( "Error reading sensor1 %+v", error1 )
 		}
-		fmt.Println( sensor0Data )
-		fmt.Println( sensor1Data )
+		if sensor0Data > sensor1Data {
+			gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
+			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
+		} else {
+			gopigo3.SetMotorDps( g.MOTOR_LEFT, -180 )
+			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
+		} 
+
+		//fmt.Println( sensor0Data )
+		//fmt.Println( sensor1Data )
 	}
 }
 
