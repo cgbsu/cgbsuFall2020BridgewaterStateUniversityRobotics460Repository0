@@ -40,7 +40,7 @@ func main() {
 	//struct (go uses structs and not objects) It takes four parameters
 	robot := gobot.NewRobot("gopigo3sensorChecker", //first a name
 		[]gobot.Connection{raspiAdaptor}, //next a slice of connections to one or more robot controllers
-		[]gobot.Device{gopigo3, lightSensor[ 0 ], lightSensor[ 1 ] }, //next a slice of one or more sensors and actuators for the robots
+		[]gobot.Device{gopigo3, lightSensors[ 0 ], lightSensors[ 1 ] }, //next a slice of one or more sensors and actuators for the robots
 		mainRobotFunc, //the variable holding the function to run in a new thread as the main function
 	)
 
