@@ -11,13 +11,13 @@ import (
 )
 
 func CircleLeft( gopigo3 *g.Driver, howFast int ) {
-	howFast = int( math.Abs( howFast ) )
+	howFast = int( math.Abs( float64( howFast ) ) )
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, howFast )
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, -howFast )
 }
 
 func CircleRight( gopigo3 *g.Driver, howFast int ) {
-	howFast = int( math.Abs( howFast ) )
+	howFast = int( math.Abs( float64( howFast ) ) )
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, -howFast )
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, howFast )
 }
