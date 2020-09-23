@@ -7,7 +7,14 @@ import (
 	g "gobot.io/x/gobot/platforms/dexter/gopigo3"
 	"gobot.io/x/gobot/platforms/raspi"
 	"time"
+	"math"
 )
+
+func CircleLeft( gopigo3 *g.Driver, howFast int ) {
+	howFast = math.Abs( howFast )
+	gopigo3.SetMotorDps( g.MOTOR_LEFT, howFast )
+	gopigo3.SetMotorDps( g.MOTOR_RIGHT, -howFast )
+}
 
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
 	gobot.Every( time.Millisecond, func() {
