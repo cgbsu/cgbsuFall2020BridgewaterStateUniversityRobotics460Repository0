@@ -34,7 +34,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 	}
 }
 
-func Close( gopigo3 *g.Driver ) {
+func Stop( gopigo3 *g.Driver ) {
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
 }
