@@ -60,5 +60,5 @@ func main() {
 	)
 
 	robot.Start() //actually run the function
-	robot.Halt()
+	robot.Stop()
 }
