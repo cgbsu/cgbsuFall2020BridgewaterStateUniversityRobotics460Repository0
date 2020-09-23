@@ -19,14 +19,13 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		if error1 != nil {
 			fmt.Errorf( "Error reading sensor1 %+v", error1 )
 		}
-		if sensor0Data > sensor1Data {
-			gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
-			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
-		} else {
-			gopigo3.SetMotorDps( g.MOTOR_LEFT, -180 )
-			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -180 )
-		} 
-			// asdassdssdadsatest for systme
+		if sensor0Data > sensor1Data || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
+			gopigo3.SetMotorDps( g.MOTOR_LEFT, 30 )
+			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -30 )
+		} else if sensor1Data < sensor0Data {
+			gopigo3.SetMotorDps( g.MOTOR_LEFT, -30 )
+			gopigo3.SetMotorDps( g.MOTOR_RIGHT, 30 )
+		}
 		//fmt.Println( sensor0Data )
 		//fmt.Println( sensor1Data )
 	}
@@ -36,8 +35,8 @@ func main() {
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
 	//AnalogDigital Port 1 is "AD_1_1" this is port 2
-	lightSensors := [ 2 ]*aio.GroveLightSensorDriver{ aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ), 
-			aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ) }
+	lightSensors := [ 2 ]*aio.GroveLightSensorDriver{ aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ), 
+			aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ) }
 	
 	mainRobotFunc := func() {
 		robotRunLoop( gopigo3, lightSensors )
