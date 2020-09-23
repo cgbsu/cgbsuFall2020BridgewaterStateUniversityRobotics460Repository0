@@ -34,6 +34,11 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 	}
 }
 
+func Close( gopigo3 *g.Driver ) {
+	gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
+	gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
+}
+
 func main() {
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
@@ -55,4 +60,5 @@ func main() {
 	)
 
 	robot.Start() //actually run the function
+	defer Stop()
 }
