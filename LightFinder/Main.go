@@ -6,7 +6,7 @@ import (
 	"gobot.io/x/gobot/drivers/aio"
 	g "gobot.io/x/gobot/platforms/dexter/gopigo3"
 	"gobot.io/x/gobot/platforms/raspi"
-	//"time"
+	"time"
 )
 
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
