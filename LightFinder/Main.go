@@ -60,5 +60,5 @@ func main() {
 	)
 
 	robot.Start() //actually run the function
-	defer Stop()
+	defer Stop( gopigo3 )
 }
