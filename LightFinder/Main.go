@@ -10,7 +10,7 @@ import (
 )
 
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
-	gobot.Every( time.Millisecond * func() {
+	gobot.Every( time.Milliseconds, func() {
 		sensor0Data, error0 := lightSensors[ 0 ].Read()
 		sensor1Data, error1 := lightSensors[ 1 ].Read()
 		if error0 != nil {
