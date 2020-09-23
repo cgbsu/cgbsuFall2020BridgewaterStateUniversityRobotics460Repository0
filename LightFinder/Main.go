@@ -30,7 +30,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 			gopigo3.SetMotorDps( g.MOTOR_RIGHT, 180 )
 		}
 		fmt.Println( "Sensors: ", sensor0Data, sensor1Data )
-		defer gopigo3.Halt()
+		//defer gopigo3.Halt()
 	} )
 }
 
