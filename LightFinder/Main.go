@@ -16,6 +16,13 @@ func CircleLeft( gopigo3 *g.Driver, howFast int ) {
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, -howFast )
 }
 
+func CircleRight( gopigo3 *g.Driver, howFast int ) {
+	howFast = math.Abs( howFast )
+	gopigo3.SetMotorDps( g.MOTOR_LEFT, -howFast )
+	gopigo3.SetMotorDps( g.MOTOR_RIGHT, howFast )
+}
+
+
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
 	gobot.Every( time.Millisecond, func() {
 		sensor0Data, error0 := lightSensors[ 0 ].Read()
@@ -27,12 +34,10 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 			fmt.Errorf( "Error reading sensor1 %+v", error1 )
 		}
 		tolerence := 10
-		if ( sensor0Data - sensor1Data ) > tolerence || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
-			gopigo3.SetMotorDps( g.MOTOR_LEFT, 10 )
-			gopigo3.SetMotorDps( g.MOTOR_RIGHT, -10 )
-		} else if ( sensor1Data - sensor0Data ) > tolerence {
-			gopigo3.SetMotorDps( g.MOTOR_LEFT, -10 )
-			gopigo3.SetMotorDps( g.MOTOR_RIGHT, 10 )
+		if math.Abs( sensor0Data - sensor1Data ) > tolerence || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
+			CircleLeft( gopigo3, 10 )
+		} else if math.Abs( sensor1Data - sensor0Data ) > tolerence {
+			CircleRight( gopigo3, 10 )
 		} else {
 			gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
 			gopigo3.SetMotorDps( g.MOTOR_RIGHT, 180 )
