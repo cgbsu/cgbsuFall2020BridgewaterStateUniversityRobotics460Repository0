@@ -35,9 +35,9 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		}
 		tolerence := 10
 		sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
-		if ( sensor0Data > sensor1Data && sensorDifference > tolerence ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
+		if ( sensor0Data < sensor1Data && sensorDifference > tolerence ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
 			CircleLeft( gopigo3, 10 )
-		} else if ( sensor0Data < sensor1Data && sensorDifference > tolerence ) {
+		} else if ( sensor0Data > sensor1Data && sensorDifference > tolerence ) {
 			CircleRight( gopigo3, 10 )
 		} else {
 			gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
