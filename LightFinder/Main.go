@@ -79,7 +79,7 @@ func main() {
 			aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ) }
 	
 	mainRobotFunc := func() {
-		robotRunLoop( gopigo3, lightSensors )
+		robotRunLoop( gopigo3, lightSensors, &reachedDestinationCount )
 	}
 
 
