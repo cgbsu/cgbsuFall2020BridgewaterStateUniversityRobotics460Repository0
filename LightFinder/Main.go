@@ -33,7 +33,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		if error1 != nil {
 			fmt.Errorf( "Error reading sensor1 %+v", error1 )
 		}
-		tolerence := 100
+		tolerence := 10
 		sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
 		if ( sensor0Data < sensor1Data && sensorDifference > tolerence ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
 			CircleLeft( gopigo3, 10 )
