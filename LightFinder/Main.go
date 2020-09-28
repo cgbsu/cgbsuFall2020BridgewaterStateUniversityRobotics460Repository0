@@ -25,18 +25,20 @@ func CircleRight( gopigo3 *g.Driver, howFast int ) {
 
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver, reachedDestinationCount *int) {
 	gobot.Every( time.Millisecond, func() {
-		sensor0Data, error0 := lightSensors[ 0 ].Read()
-		sensor1Data, error1 := lightSensors[ 1 ].Read()
-		if error0 != nil {
-			fmt.Errorf( "Error reading sensor0 %+v", error0 )
-		}
-		if error1 != nil {
-			fmt.Errorf( "Error reading sensor1 %+v", error1 )
-		}
 		const WaitCountConstant = 10
 		if ( *reachedDestinationCount >= WaitCountConstant ) {
 			TolerenceConstant := 3
 			DestinationDataRageConstant := 3050
+			gopigo3.SetLED( g.LED_EYE_RIGHT, 0, 0, 0 )
+			gopigo3.SetLED( g.LED_EYE_LEFT, 0, 0, 0 )
+			sensor0Data, error0 := lightSensors[ 0 ].Read()
+			sensor1Data, error1 := lightSensors[ 1 ].Read()
+			if error0 != nil {
+				fmt.Errorf( "Error reading sensor0 %+v", error0 )
+			}
+			if error1 != nil {
+				fmt.Errorf( "Error reading sensor1 %+v", error1 )
+			}
 				sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
 			if ( sensor0Data < sensor1Data && sensorDifference > TolerenceConstant ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
 				CircleLeft( gopigo3, 10 )
