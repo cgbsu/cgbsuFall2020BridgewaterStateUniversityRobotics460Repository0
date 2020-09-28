@@ -26,7 +26,7 @@ func CircleRight( gopigo3 *g.Driver, howFast int ) {
 func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver, reachedDestinationCount *int) {
 	gobot.Every( time.Millisecond, func() {
 		const WaitCountConstant = 10
-		if ( *reachedDestinationCount >= WaitCountConstant ) {
+		if ( *reachedDestinationCount <= WaitCountConstant ) {
 			TolerenceConstant := 3
 			DestinationDataRageConstant := 3050
 			gopigo3.SetLED( g.LED_EYE_RIGHT, 0, 0, 0 )
