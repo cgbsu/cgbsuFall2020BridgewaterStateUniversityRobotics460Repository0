@@ -36,7 +36,7 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		const WaitCountConstant = 10
 		if ( reachedDestinationCount >= WaitCountConstant ) {
 			TolerenceConstant := 3
-			DestinationDataRageCOnstant = 3050
+			DestinationDataRageConstant := 3050
 				sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
 			if ( sensor0Data < sensor1Data && sensorDifference > TolerenceConstant ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
 				CircleLeft( gopigo3, 10 )
@@ -46,7 +46,8 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 				gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
 				gopigo3.SetMotorDps( g.MOTOR_RIGHT, 180 )
 			}
-			if ( sensor0Data >= DestinationDataRageCOnstant && sensor1Data >= DestinationDataRageCOnstant ) {
+			if ( sensor0Data >= DestinationDataRageConstant && 
+					sensor1Data >= DestinationDataRageConstant ) {
 				*reachedDestinationCount += 1
 			} else {
 				*reachedDestinationCount = 0
