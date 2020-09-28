@@ -23,7 +23,7 @@ func CircleRight( gopigo3 *g.Driver, howFast int ) {
 }
 
 
-func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver) {
+func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriver, reachedDestinationCount *int) {
 	gobot.Every( time.Millisecond, func() {
 		sensor0Data, error0 := lightSensors[ 0 ].Read()
 		sensor1Data, error1 := lightSensors[ 1 ].Read()
@@ -33,18 +33,34 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 		if error1 != nil {
 			fmt.Errorf( "Error reading sensor1 %+v", error1 )
 		}
-		tolerence := 10
-		sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
-		if ( sensor0Data < sensor1Data && sensorDifference > tolerence ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
-			CircleLeft( gopigo3, 10 )
-		} else if ( sensor0Data > sensor1Data && sensorDifference > tolerence ) {
-			CircleRight( gopigo3, 10 )
+		const WaitCountConstant = 10
+		if ( reachedDestinationCount >= WaitCountConstant ) {
+			TolerenceConstant := 3
+			DestinationDataRageCOnstant = 3050
+				sensorDifference := int( math.Abs( float64( sensor0Data - sensor1Data ) ) )
+			if ( sensor0Data < sensor1Data && sensorDifference > TolerenceConstant ) || ( sensor0Data < 1000 && sensor1Data < 1000 ) {
+				CircleLeft( gopigo3, 10 )
+			} else if ( sensor0Data > sensor1Data && sensorDifference > TolerenceConstant ) {
+				CircleRight( gopigo3, 10 )
+			} else {
+				gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
+				gopigo3.SetMotorDps( g.MOTOR_RIGHT, 180 )
+			}
+			if ( sensor0Data >= DestinationDataRageCOnstant && sensor1Data >= DestinationDataRageCOnstant ) {
+				*reachedDestinationCount += 1
+			} else {
+				*reachedDestinationCount = 0
+			}
+			fmt.Println( "Sensors: ", sensor0Data, sensor1Data )
 		} else {
-			gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
-			gopigo3.SetMotorDps( g.MOTOR_RIGHT, 180 )
+			gopigo3.SetLED( LED_EYE_RIGHT, 0, *reachedDestinationCount - WaitCountConstant, 0 )
+			gopigo3.SetLED( LED_EYE_LEFT, 0, *reachedDestinationCount - WaitCountConstant, 0 )
+			if ( *reachedDestinationCount > WaitCountConstant ) {
+				*reachedDestinationCount = WaitCountConstant
+			} else {
+				*reachedDestinationCount = WaitCountConstant + 1
+			}
 		}
-		fmt.Println( "Sensors: ", sensor0Data, sensor1Data )
-		//defer gopigo3.Halt()
 	} )
 }
 
@@ -56,6 +72,7 @@ func Stop( gopigo3 *g.Driver ) {
 func main() {
 	raspiAdaptor := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdaptor)
+	reachedDestinationCount := 0
 	//AnalogDigital Port 1 is "AD_1_1" this is port 2
 	lightSensors := [ 2 ]*aio.GroveLightSensorDriver{ aio.NewGroveLightSensorDriver( gopigo3, "AD_1_1" ), 
 			aio.NewGroveLightSensorDriver( gopigo3, "AD_2_1" ) }
