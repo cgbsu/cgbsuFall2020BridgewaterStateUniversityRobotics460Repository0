@@ -54,8 +54,8 @@ func robotRunLoop(gopigo3 *g.Driver, lightSensors [ 2 ]*aio.GroveLightSensorDriv
 			}
 			fmt.Println( "Sensors: ", sensor0Data, sensor1Data )
 		} else {
-			gopigo3.SetLED( LED_EYE_RIGHT, 0, uint8 ( *reachedDestinationCount - WaitCountConstant ), 0 )
-			gopigo3.SetLED( LED_EYE_LEFT, 0, uint8 ( *reachedDestinationCount - WaitCountConstant ), 0 )
+			gopigo3.SetLED( Led.LED_EYE_RIGHT, 0, uint8 ( *reachedDestinationCount - WaitCountConstant ), 0 )
+			gopigo3.SetLED( Led.LED_EYE_LEFT, 0, uint8 ( *reachedDestinationCount - WaitCountConstant ), 0 )
 			if ( *reachedDestinationCount > WaitCountConstant ) {
 				*reachedDestinationCount = WaitCountConstant
 			} else {
