@@ -38,7 +38,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println(lidarReading)
 		fmt.Println(message)
 		time.Sleep(time.Second * 3)*/
-		if float( lidarReading ) < OneFootInCentimetersConstant {
+		if float32( lidarReading ) < OneFootInCentimetersConstant {
 
 		} else {
 
