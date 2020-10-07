@@ -24,8 +24,7 @@ func UniformMove( gopigo3 *g.Driver, dps int ) {
 	gopigo3.SetMotorDPS( Motor.MOTOR_RIGHT, dps )
 }
 
-func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver )
-{
+func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	err := lidarSensor.Start()
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
