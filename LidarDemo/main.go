@@ -29,7 +29,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
-	gopigo3.Every( time.Millisecond, func() { //loop forever
+	gobot.Every( time.Millisecond, func() { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
