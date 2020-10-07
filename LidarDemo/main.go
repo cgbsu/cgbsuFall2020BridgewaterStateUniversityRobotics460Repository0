@@ -34,7 +34,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
 		}
-		fmt.Printf("Lidar Reading: %d", lidarReading)/*
+		fmt.Printf("Lidar Reading: %d\n", lidarReading)/*
 		fmt.Println(lidarReading)
 		fmt.Println(message)
 		time.Sleep(time.Second * 3)*/
