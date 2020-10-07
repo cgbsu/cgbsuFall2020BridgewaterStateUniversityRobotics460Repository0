@@ -41,7 +41,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if float32( lidarReading ) < OneFootInCentimetersConstant {
 			
 		} else {
-			UniformMove( gopigo3, 180 )
+			UniformMove( gopigo3, -180 )
 		}
 	} )
 }
