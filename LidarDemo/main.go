@@ -20,8 +20,8 @@ import (
 const OneFootInCentimetersConstant = 29.4
 
 func UniformMove( gopigo3 *g.Driver, dps int ) {
-	gopigo3.SetMotorDps( Motor.MOTOR_LEFT, dps )
-	gopigo3.SetMotorDps( Motor.MOTOR_RIGHT, dps )
+	gopigo3.SetMotorDps( g.Motor.MOTOR_LEFT, dps )
+	gopigo3.SetMotorDps( g.Motor.MOTOR_RIGHT, dps )
 }
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
