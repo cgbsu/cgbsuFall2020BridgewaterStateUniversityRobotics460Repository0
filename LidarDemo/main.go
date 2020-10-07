@@ -17,9 +17,12 @@ import (
 	* : Second goal, measure full box.
 */
 
-const OneFootInCentimetersConstant := 29.4
+const OneFootInCentimetersConstant = 29.4
 
-func Uniform
+func UniformMove( gopigo3 *g.Driver, dps int ) {
+	gopigo3.SetMotorDPS( Motor.MOTOR_LEFT, dps )
+	gopigo3.SetMotorDPS( Motor.MOTOR_RIGHT, dps )
+}
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver,
 
