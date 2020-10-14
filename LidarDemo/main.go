@@ -27,13 +27,13 @@ func UniformMove( gopigo3 *g.Driver, dps int ) {
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	err := lidarSensor.Start()
-	sideLength := 0.0
+	//sideLength := 0.0
 	initialized := false
 	goalDistance  := 0
-	const InitialSpeedConstant = -180
-	const InitialMeasuringSpeedConstant = -10
-	rightMeasuringSpeed := InitialMeasuringSpeedConstant
-	leftMeasuringSpeed := InitialMeasuringSpeedConstant
+	//const InitialSpeedConstant = -180
+	//const InitialMeasuringSpeedConstant = -10
+	//rightMeasuringSpeed := InitialMeasuringSpeedConstant
+	//leftMeasuringSpeed := InitialMeasuringSpeedConstant
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
