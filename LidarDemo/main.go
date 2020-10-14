@@ -18,6 +18,7 @@ import (
 */
 
 const OneFootInCentimetersConstant = 29.4
+const OneFootInCentimetersRoundUpConstant = 30
 
 func UniformMove( gopigo3 *g.Driver, dps int ) {
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
@@ -26,9 +27,17 @@ func UniformMove( gopigo3 *g.Driver, dps int ) {
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	err := lidarSensor.Start()
+	sideLength := 0.0
+	initialized := false
+	goalDistance  := 0
+	const InitialSpeedConstant = -180
+	const InitialMeasuringSpeedConstant = -10
+	rightMeasuringSpeed := InitialMeasuringSpeedConstant
+	leftMeasuringSpeed := InitialMeasuringSpeedConstant
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
+	gopigo3.SetMotorDps( g.MOTOR_LEFT, 180 )
 	gobot.Every( time.Millisecond, func() { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
@@ -38,10 +47,15 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println(lidarReading)
 		fmt.Println(message)
 		time.Sleep(time.Second * 3)*/
-		if float32( lidarReading ) < OneFootInCentimetersConstant {
-			UniformMove( gopigo3, 0 )
-		} else {
-			UniformMove( gopigo3, -180 )
+
+		if lidarReading < OneFootInCentimetersRoundUpConstant {
+			if initialized == false {
+				goalDistance = lidarReading
+				initialized = true
+			}
+			
+		} else if initialized == false {
+			//UniformMove( gopigo3, InitialSpeedConstant )
 		}
 	} )
 }
