@@ -50,7 +50,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println("error starting lidarSensor")
 	}
 
-	turnActive := false
+	// turnActive := false
 	turnCount := 0
 	const MaxTurnCount = 9
 
