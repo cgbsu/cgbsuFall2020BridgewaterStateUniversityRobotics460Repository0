@@ -50,6 +50,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println("error starting lidarSensor")
 	}
 
+	turnActive := false
+	turnCount := 0
+	const MaxTurnCount = 9
+
 	gobot.Every( time.Millisecond, func() { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
@@ -71,40 +75,16 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				initialized = true
 			} else {
 				// fmt.Println( "B" )
-				//Calculate where we want to go//
-				deltaY := float64( previousDistance - lidarReading )
-				deltaX := math.Sqrt( math.Pow( float64( previousSpeed ), 2.0 ) - math.Pow( deltaY, 2.0 ) )
-				theta := math.Atan( deltaY / deltaX )
-				speed := math.Sqrt( math.Pow( deltaX, 2.0 ) + math.Pow( deltaY, 2.0 ) )
-				//Calculate arc radius//
-				leftWheelLength := speed * math.Sin( theta )
-				rightWheelLength := speed * math.Cos( theta )
-				/*const DeltaLengthConstant = leftWheelLength - rightWheelLength
-				greaterLength := leftWheelLength 
-				sideScaler := -1
-				if leftWheelLength <= rightWheelLength {
-					greaterLength = rightWheelLength
-					sideScaler = 1
-				}
-				const Sidetheta = math.Arctan( DeltaLengthConstant / RobotWidthConstant )
-				const SideOffsetMagnitudeConstant = math.Sqrt( - math.Pow( greaterLength, 2 ) / ( math.Pow( math.Cos( Sidetheta ), 2 ) - 1.0 ) )
-				const RadiusConstant = math.Cos( Sidetheta ) * sideScaler * SideOffsetMagnitudeConstant */
-
-				//Calculate Dps for each wheel//
-				leftWheelDps := int( leftWheelLength / RobotWheelRadiusConstant )
-				rightWheelDps := int( rightWheelLength / RobotWheelRadiusConstant )
-				Move( gopigo3, leftWheelDps, rightWheelDps )
-				previousDistance = lidarReading
-				previousSpeed = int( speed )
-				message := fmt.Sprintln( "deltaX: ", deltaX, " deltaY: ", deltaY, " theta: ", theta, 
-						" speed: ", speed, " leftWheelLength: ", leftWheelLength, " rightWheelLength", 
-						rightWheelLength, " leftWheelDps ", leftWheelDps, " rightWheelDps ", rightWheelDps, 
-						" previousDistance: ", previousDistance, " previousSpeed: ", previousSpeed )
-				fmt.Print( message )
+				UniformMove( gopigo3, InitialMeasuringspeed )				
 			}
 		} else if initialized == false {
 			// fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
+		}
+		else if turnCount < MaxTurnCount {
+			// fmt.Println( "D" )
+			Move( 10, -10 )
+			turnCount += 1
 		}
 	} )
 }
