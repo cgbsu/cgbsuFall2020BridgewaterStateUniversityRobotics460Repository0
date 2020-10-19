@@ -92,7 +92,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				rightWheelDps := int( rightWheelLength / RobotWheelRadiusConstant )
 				Move( gopigo3, leftWheelDps, rightWheelDps )
 				previousDistance = lidarReading
-				previousSpeed = speed
+				previousSpeed = int( speed )
 			}
 		} else if initialized == false {
 			UniformMove( gopigo3, Initialspeed )
