@@ -88,9 +88,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				const RadiusConstant = math.Cos( Sidetheta ) * sideScaler * SideOffsetMagnitudeConstant */
 
 				//Calculate Dps for each wheel//
-				const LeftWheelDpsConstant = int( leftWheelLength / RobotWheelRadiusConstant )
-				const RightWheelDpsConstant = int( rightWheelLength / RobotWheelRadiusConstant )
-				Move( gopigo3, LeftWheelDpsConstant, RightWheelDpsConstant )
+				leftWheelDpsConstant = int( leftWheelLength / RobotWheelRadiusConstant )
+				lightWheelDpsConstant = int( rightWheelLength / RobotWheelRadiusConstant )
+				Move( gopigo3, leftWheelDpsConstant, rightWheelDpsConstant )
 			}
 		} else if initialized == false {
 			UniformMove( gopigo3, Initialspeed )
