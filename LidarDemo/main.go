@@ -45,7 +45,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	//rightMeasuringSpeed := InitialMeasuringspeed
 	//measuredInitialSpeed := false
 	previousSpeed := 0
-	//previousDistance := 0
+	previousDistance := 0
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
