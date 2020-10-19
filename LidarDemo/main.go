@@ -69,13 +69,13 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				initialized = true
 			} else {
 				//Calculate where we want to go//
-				deltaY = previousDistance - lidarReading
-				deltaX = math.Sqrt( math.Pow( previousSpeed, 2 ) - math.Pow( deltaY ) )
-				theta = math.Arctan( deltaY / deltaX )
-				speed = math.Sqrt( math.Pow( deltaX, 2 ) + math.Pow( deltaY, 2 ) )
+				deltaY := previousDistance - lidarReading
+				deltaX := math.Sqrt( math.Pow( previousSpeed, 2 ) - math.Pow( deltaY ) )
+				theta := math.Arctan( deltaY / deltaX )
+				speed := math.Sqrt( math.Pow( deltaX, 2 ) + math.Pow( deltaY, 2 ) )
 				//Calculate arc radius//
-				leftWheelLength = speed * math.Sin( theta )
-				rightWheelLength = speed * math.Cos( theta )
+				leftWheelLength := speed * math.Sin( theta )
+				rightWheelLength := speed * math.Cos( theta )
 				/*const DeltaLengthConstant = leftWheelLength - rightWheelLength
 				greaterLength := leftWheelLength 
 				sideScaler := -1
