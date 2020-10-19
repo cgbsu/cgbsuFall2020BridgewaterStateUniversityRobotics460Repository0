@@ -63,14 +63,14 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 		if lidarReading < OneFootInCentimetersRoundUpConstant {
 			if initialized == false {
-				fmt.Println( "A" )
+				//fmt.Println( "A" )
 				goalDistance = lidarReading
 				UniformMove( gopigo3, InitialMeasuringspeed )
 				previousSpeed = InitialMeasuringspeed
 				previousDistance = lidarReading
 				initialized = true
 			} else {
-				fmt.Println( "B" )
+				// fmt.Println( "B" )
 				//Calculate where we want to go//
 				deltaY := float64( previousDistance - lidarReading )
 				deltaX := math.Sqrt( math.Pow( float64( previousSpeed ), 2.0 ) - math.Pow( deltaY, 2.0 ) )
@@ -96,9 +96,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				Move( gopigo3, leftWheelDps, rightWheelDps )
 				previousDistance = lidarReading
 				previousSpeed = int( speed )
+				fmt.PrintLn( "deltaX: %d, deltaY: %d, theta: %d, speed: %d, rightWheelLength: %d, leftWheelLength: %d, leftWheelDps: %d, rightWheelDps: %d, previousDistance: %d, previousSpeed: %d, ", deltaX, deltaY, theta, speed, rightWheelLength, leftWheelLength, leftWheelDps, rightWheelDps, previousDistance, previousSpeed )
 			}
 		} else if initialized == false {
-			fmt.Println( "C" )
+			// fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
 		}
 	} )
