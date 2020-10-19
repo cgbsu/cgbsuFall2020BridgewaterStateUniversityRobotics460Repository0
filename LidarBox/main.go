@@ -80,8 +80,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		} else if initialized == false {
 			// fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
-		}
-		else if turnCount < MaxTurnCount {
+		} else if turnCount < MaxTurnCount {
 			// fmt.Println( "D" )
 			Move( 10, -10 )
 			turnCount += 1
