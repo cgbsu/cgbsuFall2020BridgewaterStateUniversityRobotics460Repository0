@@ -36,13 +36,13 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	sideLength := 0.0
 	initialized := false
 	goalDistance  := 0
-	const InitialSpeedConstant = -180
-	const InitialMeasuringSpeedConstant = -10
+	const Initialspeed = -180
+	const InitialMeasuringspeed = -10
 	//In Centimeters//
 	const RobotWidthConstant = 13
 	const RobotWheelRadiusConstant = 6.5
-	leftMeasuringSpeed := InitialMeasuringSpeedConstant
-	rightMeasuringSpeed := InitialMeasuringSpeedConstant
+	leftMeasuringSpeed := InitialMeasuringspeed
+	rightMeasuringSpeed := InitialMeasuringspeed
 	measuredInitialSpeed := false
 	previousSpeed := 0
 	previousDistance := 0
@@ -63,37 +63,37 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if lidarReading < OneFootInCentimetersRoundUpConstant {
 			if initialized == false {
 				goalDistance = lidarReading
-				UniformMove( gopigo3, InitialMeasuringSpeedConstant )
-				previousSpeed = InitialMeasuringSpeedConstant
+				UniformMove( gopigo3, InitialMeasuringspeed )
+				previousSpeed = InitialMeasuringspeed
 				previousDistance = lidarReading
 				initialized = true
 			} else {
 				//Calculate where we want to go//
-				const DeltaYConstant = previousDistance - lidarReading
-				const DeltaXConstant = math.Sqrt( math.Pow( previousSpeed, 2 ) - math.Pow( DeltaYConstant ) )
-				const ThetaConstant = math.Arctan( DeltaYConstant / DeltaXConstant )
-				const SpeedConstant = math.Sqrt( math.Pow( DeltaXConstant, 2 ) + math.Pow( DeltaYConstant, 2 ) )
+				deltaY = previousDistance - lidarReading
+				deltaX = math.Sqrt( math.Pow( previousSpeed, 2 ) - math.Pow( deltaY ) )
+				theta = math.Arctan( deltaY / deltaX )
+				speed = math.Sqrt( math.Pow( deltaX, 2 ) + math.Pow( deltaY, 2 ) )
 				//Calculate arc radius//
-				const LeftWheelLength = SpeedConstant * math.Sin( ThetaConstant )
-				const RightWheelLength = SpeedConstant * math.Cos( ThetaConstant )
-				/*const DeltaLengthConstant = LeftWheelLength - RightWheelLength
-				greaterLength := LeftWheelLength 
+				leftWheelLength = speed * math.Sin( theta )
+				rightWheelLength = speed * math.Cos( theta )
+				/*const DeltaLengthConstant = leftWheelLength - rightWheelLength
+				greaterLength := leftWheelLength 
 				sideScaler := -1
-				if LeftWheelLength <= RightWheelLength {
-					greaterLength = RightWheelLength
+				if leftWheelLength <= rightWheelLength {
+					greaterLength = rightWheelLength
 					sideScaler = 1
 				}
-				const SideThetaConstant = math.Arctan( DeltaLengthConstant / RobotWidthConstant )
-				const SideOffsetMagnitudeConstant = math.Sqrt( - math.Pow( greaterLength, 2 ) / ( math.Pow( math.Cos( SideThetaConstant ), 2 ) - 1.0 ) )
-				const RadiusConstant = math.Cos( SideThetaConstant ) * sideScaler * SideOffsetMagnitudeConstant */
+				const Sidetheta = math.Arctan( DeltaLengthConstant / RobotWidthConstant )
+				const SideOffsetMagnitudeConstant = math.Sqrt( - math.Pow( greaterLength, 2 ) / ( math.Pow( math.Cos( Sidetheta ), 2 ) - 1.0 ) )
+				const RadiusConstant = math.Cos( Sidetheta ) * sideScaler * SideOffsetMagnitudeConstant */
 
 				//Calculate Dps for each wheel//
-				const LeftWheelDpsConstant = LeftWheelLength / RobotWheelRadiusConstant
-				const RightWheelDpsConstant = RightWheelLength / RobotWheelRadiusConstant
+				const LeftWheelDpsConstant = leftWheelLength / RobotWheelRadiusConstant
+				const RightWheelDpsConstant = rightWheelLength / RobotWheelRadiusConstant
 				Move( gopigo3, LeftWheelDpsConstant, RightWheelDpsConstant )
 			}
 		} else if initialized == false {
-			UniformMove( gopigo3, InitialSpeedConstant )
+			UniformMove( gopigo3, Initialspeed )
 		}
 	} )
 }
