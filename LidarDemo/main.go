@@ -55,7 +55,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
 		}
-		fmt.Printf("Lidar Reading: %d\n", lidarReading)/*
+		//fmt.Printf("Lidar Reading: %d\n", lidarReading)
+		/*
 		fmt.Println(lidarReading)
 		fmt.Println(message)
 		time.Sleep(time.Second * 3)*/
@@ -68,6 +69,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				previousDistance = lidarReading
 				initialized = true
 			} else {
+				fmt.Println( "Here" )
 				//Calculate where we want to go//
 				deltaY := float64( previousDistance - lidarReading )
 				deltaX := math.Sqrt( math.Pow( float64( previousSpeed ), 2.0 ) - math.Pow( deltaY, 2.0 ) )
