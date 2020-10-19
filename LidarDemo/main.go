@@ -96,7 +96,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				Move( gopigo3, leftWheelDps, rightWheelDps )
 				previousDistance = lidarReading
 				previousSpeed = int( speed )
-				message := fmt.Sprintln( "deltaX: %d, deltaY: %d, theta: %d, speed: %d, rightWheelLength: %d, leftWheelLength: %d, leftWheelDps: %d, rightWheelDps: %d, previousDistance: %d, previousSpeed: %d, ", deltaX, deltaY, theta, speed, rightWheelLength, leftWheelLength, leftWheelDps, rightWheelDps, previousDistance, previousSpeed )
+				message := fmt.Sprintln( "deltaX: ", deltaX, " deltaY: ", deltaY, " theta: ", theta, " speed: ", speed, " leftWheelLength: ", leftWheelLength, " rightWheelLength", rightWheelLength, " leftWheelDps ", leftWheelDps, " rightWheelDps ", rightWheelDps, " previousDistance: ", previousDistance, " previousSpeed: ", previousSpeed )
 				fmt.Print( message )
 			}
 		} else if initialized == false {
