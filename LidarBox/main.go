@@ -49,11 +49,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
-
-	// turnActive := false
-	turnCount := 0
-	const MaxTurnCount = 9
-
 	gobot.Every( time.Millisecond, func() { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
@@ -80,10 +75,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		} else if initialized == false {
 			fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
-		} else if turnCount < MaxTurnCount {
+		} else {
 			fmt.Println( "D" )
 			Move( gopigo3, 90, -90 )
-			turnCount += 1
 		}
 	} )
 }
