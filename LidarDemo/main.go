@@ -89,7 +89,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 				//Calculate Dps for each wheel//
 				leftWheelDps := int( leftWheelLength / RobotWheelRadiusConstant )
-				lightWheelDps := int( rightWheelLength / RobotWheelRadiusConstant )
+				rightWheelDps := int( rightWheelLength / RobotWheelRadiusConstant )
 				Move( gopigo3, leftWheelDps, rightWheelDps )
 			}
 		} else if initialized == false {
