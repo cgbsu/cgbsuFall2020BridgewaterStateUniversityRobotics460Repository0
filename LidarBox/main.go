@@ -67,21 +67,21 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 		if lidarReading < OneFootInCentimetersRoundUpConstant {
 			if initialized == false {
-				//fmt.Println( "A" )
+				fmt.Println( "A" )
 				goalDistance = lidarReading
 				UniformMove( gopigo3, InitialMeasuringspeed )
-				previousSpeed = InitialMeasuringspeed
+				previousSpeed = -180 //InitialMeasuringspeed
 				previousDistance = lidarReading
 				initialized = true
 			} else {
-				// fmt.Println( "B" )
-				UniformMove( gopigo3, InitialMeasuringspeed )				
+				fmt.Println( "B" )
+				UniformMove( gopigo3, -180 )// InitialMeasuringspeed )				
 			}
 		} else if initialized == false {
-			// fmt.Println( "C" )
+			fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
 		} else if turnCount < MaxTurnCount {
-			// fmt.Println( "D" )
+			fmt.Println( "D" )
 			Move( gopigo3, 10, -10 )
 			turnCount += 1
 		}
