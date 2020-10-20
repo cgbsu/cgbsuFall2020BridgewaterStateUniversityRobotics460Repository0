@@ -77,7 +77,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					fmt.Println( "Greater" )
 					Move( gopigo3, -10, 5 )
 				} else {
-					UniformMove( gopigo3, 10 )
+					UniformMove( gopigo3, -10 )
 				}
 			}
 		} else if initialized == false {
