@@ -111,7 +111,10 @@ func main() {
 	raspberryPi := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspberryPi)
 	err, value :=  gopigo3.GetBatteryVoltage()
-	fmt.Println( "Voltage: ", value, " ", err )
+	fmt.Println( "Voltage: ", value )
+	if err {
+		fmt.Println( "error: ", err )
+	}
 	lidarSensor := i2c.NewLIDARLiteDriver(raspberryPi)
 	lightSensor := aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1")
 	workerThread := func() {
