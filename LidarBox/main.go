@@ -89,7 +89,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					initialized = true
 				}
 			} else if wentOutOfBounds == false {
-				outputDistance := ( outOfBoundsAverage / outOfBoundSamples )
+				outputDistance := 0
+				if outOfBoundSamples > 0 {
+					outputDistance = ( outOfBoundsAverage / outOfBoundSamples )
+				}
 				if lidarReading > goalDistance && outputDistance >= OutOfBoundsDistanceConstant && outOfBoundSamples < MaxOutOfBoundSamplesConstant {
 					fmt.Println( "Greater lr: ", lidarReading, " gd: ", goalDistance )
 					outOfBoundSamples += 1
