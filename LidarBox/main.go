@@ -110,6 +110,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 func main() {
 	raspberryPi := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspberryPi)
+	fmt.Println( "Voltage: ", gopigo3.GetVoltage() )
 	lidarSensor := i2c.NewLIDARLiteDriver(raspberryPi)
 	lightSensor := aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1")
 	workerThread := func() {
