@@ -78,7 +78,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				previousDistance = lidarReading
 				initialSample += 1
 				if initialSample >= MaxInitializationSamplesConstant {
-					goalDistance /= initialSample
+					goalDistance /= ( initialSample - 1 )
 				}
 				initialized = true
 			} else {
