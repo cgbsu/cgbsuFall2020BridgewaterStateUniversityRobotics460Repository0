@@ -100,7 +100,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					wentOutOfBounds = true
 					fmt.Println( "OUT OF BOUNDS 1" )
 				} else {
-					fmt.Println( "OUT OF BOUNDS 2" )
+					fmt.Println( "OUT OF BOUNDS 2 ", ( outOfBoundsAverage / outOfBoundSamples ) )
 				}
 			}
 		}
