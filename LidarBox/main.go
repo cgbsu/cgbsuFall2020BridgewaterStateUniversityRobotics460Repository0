@@ -81,13 +81,13 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					goalDistance /= initialSample
 					initialized = true
 				}
-			} else {
+			} else if wentOutOfBounds == false {
 				if lidarReading > goalDistance {
 					fmt.Println( "Greater lr: ", lidarReading, " gd: ", goalDistance )
 					outOfBoundSamples += 1
 					outOfBoundsAverage += lidarReading
 					Move( gopigo3, -10, -5 )
-				} else if outOfBoundSamples < MaxOutOfBoundSamplesConstant && wentOutOfBounds == false {
+				} else if outOfBoundSamples < MaxOutOfBoundSamplesConstant {
 					outOfBoundSamples = 0
 					outOfBoundsAverage = 0
 					if lidarReading < goalDistance {
@@ -98,7 +98,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					}
 				} else if ( outOfBoundsAverage / outOfBoundSamples ) >= OutOfBoundsDistanceConstant {
 					wentOutOfBounds = true
-					fmt.Println( "OUT OF BOUNDS" )
+					fmt.Println( "OUT OF BOUNDS 1" )
+				} else {
+					fmt.Println( "OUT OF BOUNDS 2" )
 				}
 			}
 		}
