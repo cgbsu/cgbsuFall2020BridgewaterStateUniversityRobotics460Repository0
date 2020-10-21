@@ -35,7 +35,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 	value, err := gopigo3.GetBatteryVoltage()
 	fmt.Println( "Voltage: ", value )
-	if err {
+	if err != nil {
 		fmt.Println( "error: ", err )
 	}
 
