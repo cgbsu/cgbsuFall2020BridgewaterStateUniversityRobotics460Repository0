@@ -33,10 +33,10 @@ func Move( gopigo3 *g.Driver, leftDps int, rightDps int ) {
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 
-	value, err := gopigo3.GetBatteryVoltage()
-	fmt.Println( "Voltage: ", value )
-	if err != nil {
-		fmt.Println( "error: ", err )
+	voltage, voltageErr := gopigo3.GetBatteryVoltage()
+	fmt.Println( "Voltage: ", voltage )
+	if voltageErr != nil {
+		fmt.Println( "error: ", voltageErr )
 	}
 
 	err := lidarSensor.Start()
