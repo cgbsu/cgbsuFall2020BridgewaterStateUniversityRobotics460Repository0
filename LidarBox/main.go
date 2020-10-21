@@ -99,9 +99,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				} else if ( outOfBoundsAverage / outOfBoundSamples ) >= OutOfBoundsDistanceConstant {
 					wentOutOfBounds = true
 					fmt.Println( "OUT OF BOUNDS 1" )
-				} else {
-					fmt.Println( "OUT OF BOUNDS 2 ", ( outOfBoundsAverage / outOfBoundSamples ) )
 				}
+			} else {
+				fmt.Println( "OUT OF BOUNDS 2 ", ( outOfBoundsAverage / outOfBoundSamples ) )
 			}
 		}
 	} )
