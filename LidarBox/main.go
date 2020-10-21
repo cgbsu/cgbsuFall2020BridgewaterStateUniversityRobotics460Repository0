@@ -48,7 +48,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	previousDistance := 0
 	foundBox := false
 	initialSample := 0
-	const MaxInitializationSamplesConstant := 10
+	const MaxInitializationSamplesConstant = 10
 
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
