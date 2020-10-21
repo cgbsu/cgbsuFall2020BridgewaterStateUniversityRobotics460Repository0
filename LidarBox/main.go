@@ -50,6 +50,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	initialSample := 0
 	const MaxInitializationSamplesConstant = 10
 
+	const MaxOutOfBoundSamples = 20
+	outOfBoundSamples := 0
+
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
@@ -58,24 +61,16 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
 		}
-		//fmt.Printf("Lidar Reading: %d\n", lidarReading)
-		/*
-		fmt.Println(lidarReading)
-		
-		fmt.Println(message)
-		time.Sleep(time.Second * 3)*/
 		if lidarReading < StartDistanceConstant {
 			foundBox = true
 		}
 		if foundBox == false {
-			// fmt.Println( "C" )
 			UniformMove( gopigo3, Initialspeed )
 		} else if foundBox == true {
 			if initialized == false {
-				// fmt.Println( "A" )
 				goalDistance += lidarReading
 				UniformMove( gopigo3, InitialMeasuringspeed )
-				previousSpeed = -180 //InitialMeasuringspeed
+				previousSpeed = -180
 				previousDistance = lidarReading
 				initialSample += 1
 				if initialSample >= MaxInitializationSamplesConstant {
@@ -83,16 +78,20 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				}
 				initialized = true
 			} else {
-				// fmt.Println( "B" )
-				if lidarReading < goalDistance {
-					fmt.Println( "Less lr: ", lidarReading, " gd: ", goalDistance )
-					Move( gopigo3, -5, -10 )
-				} else if lidarReading > goalDistance {
+				if lidarReading > goalDistance {
 					fmt.Println( "Greater lr: ", lidarReading, " gd: ", goalDistance )
+					outOfBoundSamples += 1
 					Move( gopigo3, -10, -5 )
+				} else if outOfBoundSamples < MaxOutOfBoundSamples {
+					outOfBoundSamples = 0
+					if lidarReading < goalDistance {
+						fmt.Println( "Less lr: ", lidarReading, " gd: ", goalDistance )
+						Move( gopigo3, -5, -10 )
+					} else {
+						UniformMove( gopigo3, -10 )
+					}
 				} else {
-					fmt.Println( "Greater" )
-					UniformMove( gopigo3, -10 )
+					fmt.Println( "OUT OF BOUNDS" )
 				}
 			}
 		}
