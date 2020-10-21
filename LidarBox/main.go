@@ -18,7 +18,7 @@ import (
 	* : Second goal, measure full box.
 */
 
-const StartDistanceConstant = 13//29.4
+const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func UniformMove( gopigo3 *g.Driver, dps int ) {
@@ -105,5 +105,4 @@ func main() {
 		workerThread)
 
 	robot.Start()
-
 }
