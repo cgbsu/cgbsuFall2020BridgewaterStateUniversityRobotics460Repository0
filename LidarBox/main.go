@@ -108,6 +108,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					fmt.Println( "OUT OF BOUNDS 1" )
 				} else {
 					fmt.Println( "WHAT DO I DO!?" )
+					outOfBoundSamples = 0
+					outOfBoundsAverage = 0
 				}
 			} else {
 				fmt.Println( "OUT OF BOUNDS 2 ", ( outOfBoundsAverage / outOfBoundSamples ) )
