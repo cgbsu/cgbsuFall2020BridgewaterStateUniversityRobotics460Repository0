@@ -57,7 +57,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	initialSample := 0
 	const MaxInitializationSamplesConstant = 10
 
-	const OutOfBoundsDistanceConstant = 30
+	const OutOfBoundsDistanceConstant = 40
 	const MaxOutOfBoundSamplesConstant = 5
 	outOfBoundSamples := 0
 	outOfBoundsAverage := 0
