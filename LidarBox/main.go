@@ -61,6 +61,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		//fmt.Printf("Lidar Reading: %d\n", lidarReading)
 		/*
 		fmt.Println(lidarReading)
+		
 		fmt.Println(message)
 		time.Sleep(time.Second * 3)*/
 		if lidarReading < StartDistanceConstant {
