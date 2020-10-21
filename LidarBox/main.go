@@ -32,6 +32,13 @@ func Move( gopigo3 *g.Driver, leftDps int, rightDps int ) {
 }
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
+
+	value, err :=  gopigo3.GetBatteryVoltage()
+	fmt.Println( "Voltage: ", value )
+	if err {
+		fmt.Println( "error: ", err )
+	}
+
 	err := lidarSensor.Start()
 	//sideLength := 0.0
 	initialized := false
@@ -110,11 +117,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 func main() {
 	raspberryPi := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspberryPi)
-	err, value :=  gopigo3.GetBatteryVoltage()
-	fmt.Println( "Voltage: ", err )
-	if value {
-		fmt.Println( "error: ", value )
-	}
 	lidarSensor := i2c.NewLIDARLiteDriver(raspberryPi)
 	lightSensor := aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1")
 	workerThread := func() {
