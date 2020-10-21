@@ -47,6 +47,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	previousSpeed := 0
 	previousDistance := 0
 	foundBox := false
+	initialSample := 0
+	const MaxInitializationSamplesConstant := 10
+
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
@@ -69,10 +72,14 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		} else if foundBox == true {
 			if initialized == false {
 				// fmt.Println( "A" )
-				goalDistance = lidarReading
+				goalDistance += lidarReading
 				UniformMove( gopigo3, InitialMeasuringspeed )
 				previousSpeed = -180 //InitialMeasuringspeed
 				previousDistance = lidarReading
+				initialSample += 1
+				if initialSample >= MaxInitializationSamplesConstant {
+					goalDistance /= initialSample
+				}
 				initialized = true
 			} else {
 				// fmt.Println( "B" )
