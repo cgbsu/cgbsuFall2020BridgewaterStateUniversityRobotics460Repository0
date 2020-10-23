@@ -203,9 +203,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 
 	gobot.Every( time.Millisecond, func() {
-		if firstLoop {
-			previousTime = time.Now()
-		}
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println( "RobotMainLoop::Error::Failure reading Lidar Sensor: ", err )
@@ -213,6 +210,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
+			if firstLoop {
+				previousTime = time.Now()
+				firstLoop = true
+			}
 			deltaTime := time.Since( previousTime ).Seconds()
 			fmt.Println( "Delta Time ", deltaTime )
 			currentSide.MeasureSide( gopigo3, lidarReading, deltaTime ) //, LoopTimeInSecondsConstant )
