@@ -126,7 +126,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 	return self.goalDistanceFound
 }
 
-func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopTimeInSeconds float64 ) bool {
+func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopRuntimeInSeconds float64 ) bool {
 	angle, _ := CalculateArcData( leftDps, rightDps )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
 	return self.TurnedCorner()
@@ -140,7 +140,7 @@ func ( self *Side ) TurnedCorner() bool {
 	return self.cornerTurnAngle >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) Creep( loopRuntimeInSeconds float64 ) {
+func ( self* Side ) Creep( lidarReading int, gopiogo3 *g.Driver, loopRuntimeInSeconds float64 ) {
 	if lidarReading > self.goalDistance {
 		fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
 		Move( gopigo3, -100, -50 )
@@ -162,7 +162,7 @@ func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, loopRuntim
 			self.outOfBoundsDistance.AddSample( lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			Creep()
+			self.Creep( lidarReading, gopigo3, loopRuntimeInSeconds )
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
 		self.measuredSide = true
