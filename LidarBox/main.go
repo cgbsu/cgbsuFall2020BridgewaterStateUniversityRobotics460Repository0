@@ -28,7 +28,7 @@ func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
 	robot := new( Robot )
 	robot.gopigo3 = gopigo3
 	robot.lidarSensor = lidarSensor
-	err := self.lidarSensor.Start()
+	err := robot.lidarSensor.Start()
 	if err != nil {
 		fmt.Println( "NewRobot::Error::Failure starting Lidar Sensor: ", err )
 	}
@@ -57,7 +57,6 @@ func ( self *Robot ) Move( leftDps int, rightDps int ) {
 }
 
 func ( self *Robot ) ReadLidar() int {
-	err := nil
 	self.lidarReading, err = lidarSensor.Distance()
 	if err != nil {
 		fmt.Println( "Robot::ReadLidar::Error::Failure reading Lidar Sensor: ", err )
