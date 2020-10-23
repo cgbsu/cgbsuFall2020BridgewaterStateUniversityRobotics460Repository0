@@ -130,7 +130,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopRuntimeInSeconds float64 ) bool {
 	_, angle := CalculateArcData( leftDps, rightDps )
 	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
-	self.cornerTurnAngle += ( angle / loopRuntimeInSeconds )
+	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
 	return self.TurnedCorner()
 }
 
@@ -214,7 +214,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			if firstLoop == false {
 				previousTime = time.Now()
 				firstLoop = true
-				time.Since( previousTime ).Seconds()
 			} else {
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
