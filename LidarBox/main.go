@@ -208,7 +208,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		}
 	} )
 	defer func() {
-		work.Stop()
+		// work.Stop()
 		gopigo3.Halt()
 	}()
 }
