@@ -158,7 +158,7 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.currentDirection = Forward
 }
 
-func ( self *Side ) MeasureInitialDistance( robot *Robot, lidarReading int ) bool {
+func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
 			self.goalDistanceCalculator.AddSample( lidarReading )
@@ -168,7 +168,7 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot, lidarReading int ) boo
 			}
 			robot.UniformMove( self.initialMeasuringSpeed )
 		}
-	} else if lidarReading < StartDistanceConstant {
+	} else if robot.lidarReading < StartDistanceConstant {
 		self.foundBox = true
 	} else {
 		robot.UniformMove( self.initialSpeed )
