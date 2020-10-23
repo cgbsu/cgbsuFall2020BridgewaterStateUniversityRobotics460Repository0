@@ -21,7 +21,7 @@ import (
 type Robot struct {
 	gopigo3 *g.Driver
 	lidarSensor *i2c.LIDARLiteDriver
-	lidarReading leftDps, rightDps int
+	lidarReading, leftDps, rightDps int
 }
 
 func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
