@@ -102,7 +102,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 					if lidarReading > goalDistance {
 						fmt.Println( "Greater lr: ", lidarReading, " gd: ", goalDistance )
 						Move( gopigo3, -100, -50 )
-					} if lidarReading < goalDistance {
+					} else if lidarReading < goalDistance {
 						fmt.Println( "Less lr: ", lidarReading, " gd: ", goalDistance )
 						Move( gopigo3, -50, -100 )
 					} else {
