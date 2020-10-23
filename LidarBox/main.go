@@ -209,7 +209,6 @@ func main() {
 	robot.Start()
 	defer func() { 
 		UniformMove( gopigo3, 0 )
-		robot.WorkerRegistry()
 		robot.Stop()
 	}()
 }
