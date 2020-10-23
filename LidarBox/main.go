@@ -62,33 +62,32 @@ func Creep( ) {
 
 }
 
-type Average[ type BufferType ], struct {
-	buffer BufferType
-	samples, desiredSampleCount int 
+type Average, struct {
+	 buffer, samples, desiredSampleCount int 
 }
 
-func ( self Average( BufferType )* ) InitializeAverage( desiredSampleCount int ) {
+func ( self Average* ) InitializeAverage( desiredSampleCount int ) {
 	self.desiredSampleCount = desiredSampleCount
 }
 
-func ( self Average( BufferType )* ) CalculateAverage() {
+func ( self Average* ) CalculateAverage() {
 	if samples == 0 {
-		return BufferType( 0 )
+		return 0
 	}
-	return buffer / BufferType( samples )
+	return buffer / samples
 }
 
-func ( self Average( BufferType )* ) AddSample( BufferType sample ) {
+func ( self Average* ) AddSample( int sample ) {
 	self.buffer += sample
 	self.samples += 1
 }
 
-func ( self Average( BufferType )* ) Clear() {
-	self.buffer = BufferType( 0 )
+func ( self Average* ) Clear() {
+	self.buffer = 0
 	self.samples = 0
 }
 
-func ( self Average( BufferType )* ) AtDesiredSampleCount() {
+func ( self Average* ) AtDesiredSampleCount() {
 	if self.desiredSampleCount == 0 {
 		return true
 	}
