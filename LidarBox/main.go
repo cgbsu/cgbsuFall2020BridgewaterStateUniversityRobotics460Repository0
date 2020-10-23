@@ -204,7 +204,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSide.MeasureSide( gopigo3, lidarReading, LoopTimeInSecondsConstant )
 		} else {
 			fmt.Println( "Success!" )
-			work.Stop()
 			gopigo3.Halt()
 		}
 	} )
