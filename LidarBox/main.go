@@ -137,5 +137,5 @@ func main() {
 		[]gobot.Device{gopigo3, lidarSensor, lightSensor},
 		workerThread)
 	robot.Start()
-	halt robot.Stop()
+	defer robot.Stop()
 }
