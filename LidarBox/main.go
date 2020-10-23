@@ -214,6 +214,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			if firstLoop {
 				previousTime = time.Now()
 				firstLoop = true
+				time.Since( previousTime ).Seconds()
 			} else {
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
