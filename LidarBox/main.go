@@ -36,7 +36,7 @@ func Move( gopigo3 *g.Driver, leftDps int, rightDps int ) {
 }
 
 //Calculates a robot wheel moving at a given dps will travel.//
-func DpsToDistance( dps int ) {
+func DpsToDistance( dps int ) float32 {
 	return float32( dps ) * ( 2.0 * math.Pi * 
 			RobotWheelRadiusConstant / 360.0 )
 }
