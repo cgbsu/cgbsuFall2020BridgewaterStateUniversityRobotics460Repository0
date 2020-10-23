@@ -52,8 +52,8 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	}
 	maxDistance := math.Max( leftDistance, rightDistance )
 	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
-	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( mathPow( math.Cos( theta ), 2.0 ) - 1 ) )
-	radius := math.cos( theta ) * sidePolarity * magnitude
+	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( math.Pow( math.Cos( theta ), 2.0 ) - 1 ) )
+	radius := math.Cos( theta ) * sidePolarity * magnitude
 	return radius, theta
 }
 
@@ -70,10 +70,10 @@ func ( self *Average ) InitializeAverage( desiredSampleCount int ) {
 }
 
 func ( self *Average ) CalculateAverage() {
-	if samples == 0 {
+	if self.samples == 0 {
 		return 0
 	}
-	return buffer / samples
+	return self.buffer / self.samples
 }
 
 func ( self *Average ) AddSample( int sample ) {
