@@ -92,8 +92,11 @@ func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int
 	radius, theta := CalculateArcData( leftDps, rightDps )
 	beginSide := radius + float64( beginningLidarReading )
 	endSide := radius + float64( endingLidarReading )
+	fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
 	//Law of cosines//
-	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
+	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
+	fmt.Println( "Result: ", result )
+	return result
 }
 
 type Average struct {
@@ -208,26 +211,26 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	changedDirection := false
 	if robot.lidarReading > self.goalDistance {
 		changedDirection = self.ChangeDirection( Left )
-		fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+		//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 		robot.Move( -100, -50 )
 		self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 	} else {
 		self.ClearCornerTurnAngle()
 		if robot.lidarReading < self.goalDistance {
 			changedDirection = self.ChangeDirection( Right )
-			fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			robot.Move( -50, -100 )
 		} else {
 			changedDirection = self.ChangeDirection( Forward )
 			robot.UniformMove( -100 )
-			fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 		}
 	}
 	return changedDirection
 }
 
 func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
-	fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
+	//fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false {
 		if robot.lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
@@ -240,7 +243,7 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
 		self.measuredSide = true
 	} else {
-		fmt.Println( "WHAT DO I DO!?" )
+		//fmt.Println( "WHAT DO I DO!?" )
 		self.outOfBoundsDistance.Clear()
 		robot.UniformMove( -360 )
 	}
@@ -273,7 +276,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			} else {
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
-			fmt.Println( "Delta Time ", deltaTime )
+			//fmt.Println( "Delta Time ", deltaTime )
 			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
 		} else {
