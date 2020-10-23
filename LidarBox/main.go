@@ -148,7 +148,7 @@ func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunT
 			}
 		}
 	} else if outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
-		return self.measuredSide = true
+		return ( self.measuredSide = true )
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
 		side.outOfBoundsDistance.Clear()
