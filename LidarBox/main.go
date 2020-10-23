@@ -18,6 +18,23 @@ import (
 	* : Second goal, measure full box.
 */
 
+type Robot struct {
+	gopigo3 *g.Driver
+	lidarSensor *i2c.LIDARLiteDriver
+	lidarReading leftDps, rightDps int
+}
+
+func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
+	robot := new( Robot )
+	robot.gopigo3 = gopigo3
+	self.lidarSensor = lidarSensor
+	err := self.lidarSensor.Start()
+	if err != nil {
+		fmt.Println( "NewRobot::Error::Failure starting Lidar Sensor: ", err )
+	}
+	return robot
+}
+
 //In Centimeters//
 const RobotWidthConstant = 13
 const RobotWheelRadiusConstant = 6.5
@@ -25,14 +42,26 @@ const RobotWheelRadiusConstant = 6.5
 const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
-func UniformMove( gopigo3 *g.Driver, dps int ) {
+func ( self *Robot ) UniformMove( dps int ) {
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
+	self.leftDps = dps
+	self.rightDps = dps
 }
 
-func Move( gopigo3 *g.Driver, leftDps int, rightDps int ) {
+func ( self *Robot ) Move( leftDps int, rightDps int ) {
 	gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
+	self.leftDps = leftDps
+	self.rightDps = rightDps
+}
+
+func ( self *Robot ) ReadLidar() int {
+	err := nil
+	self.lidarReading, err = lidarSensor.Distance()
+	if err != nil {
+		fmt.Println( "Robot::ReadLidar::Error::Failure reading Lidar Sensor: ", err )
+	}
 }
 
 //Calculates a robot wheel moving at a given dps will travel.//
@@ -56,6 +85,15 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	radius := math.Cos( theta ) * sidePolarity * magnitude
 	// fmt.Println( "leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
 	return radius, theta
+}
+
+func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int, leftDps, rightDps int ) {
+	radius, theta := CalculateArcData( leftDps, rightDps )
+	beginSide := radius + float64( beginningLidarReading )
+	endSide := radius + float64( endingLidarReading )
+	//Law of cosines//
+	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + rad, 2.0 ) 
+			- ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
 }
 
 type Average struct {
@@ -90,6 +128,14 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 	return self.samples >= self.desiredSampleCount
 }
 
+type QuantativeDirection int
+
+const( 
+	Left QuantativeDirection = 0
+	Right = 1
+	Forward = 2
+)
+
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
@@ -98,8 +144,9 @@ const CornerTurnAngleConstant = math.Pi / 2.0//90.0
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
 	goalDistanceCalculator, outOfBoundsDistance Average
-	goalDistance, initialSpeed, initialMeasuringSpeed int
-	cornerTurnAngle float64
+	previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
+	totalDistance, cornerTurnAngle float64
+	lastDirection, currentDirection QuantativeDirection
 }
 
 func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
@@ -107,9 +154,11 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.outOfBoundsDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
 	self.initialSpeed = initialSpeed
 	self.initialMeasuringSpeed = initialMeasuringSpeed
+	self.lastDirection = Forward
+	self.currentDirection = Forward
 }
 
-func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int ) bool {
+func ( self *Side ) MeasureInitialDistance( robot *Robot, lidarReading int ) bool {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
 			self.goalDistanceCalculator.AddSample( lidarReading )
@@ -117,18 +166,18 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 				self.goalDistance = self.goalDistanceCalculator.CalculateAverage()
 				self.goalDistanceFound = true
 			}
-			UniformMove( gopigo3, self.initialMeasuringSpeed )
+			robot.UniformMove( self.initialMeasuringSpeed )
 		}
 	} else if lidarReading < StartDistanceConstant {
 		self.foundBox = true
 	} else {
-		UniformMove( gopigo3, self.initialSpeed )
+		robot.UniformMove( self.initialSpeed )
 	}
 	return self.goalDistanceFound
 }
 
-func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopRuntimeInSeconds float64 ) bool {
-	_, angle := CalculateArcData( leftDps, rightDps )
+func ( self *Side ) UpdateCornerTurnAngle( robot *Robot, loopRuntimeInSeconds float64 ) bool {
+	_, angle := CalculateArcData( robot.leftDps, robot.rightDps )
 	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
 	return self.TurnedCorner()
@@ -142,37 +191,58 @@ func ( self *Side ) TurnedCorner() bool {
 	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) Creep( lidarReading int, gopigo3 *g.Driver, loopRuntimeInSeconds float64 ) {
-	if lidarReading > self.goalDistance {
-		fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
-		Move( gopigo3, -100, -50 )
-		self.UpdateCornerTurnAngle( -100, -50, loopRuntimeInSeconds )
-	} else {
-		self.ClearCornerTurnAngle()
-		if lidarReading < self.goalDistance {
-			fmt.Println( "Less lr: ", lidarReading, " gd: ", self.goalDistance )
-			Move( gopigo3, -50, -100 )
-		} else {
-			UniformMove( gopigo3, -100 )
-		}
+func ( self* Side ) ChangeDirection( to QuantativeDirection ) bool {
+	if side.currentDirection != to {
+		side.lastDirection = side.currentDirection
+		side.currentDirection = to
+		return true
 	}
+	return false
 }
 
-func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, loopRuntimeInSeconds float64 ) bool {
+func ( self* Side ) AddToTotalDistance( robot *Robot ) {
+	self.totalDistance += CalculateTraveledBoxDistance( self.previousLidarReading, robot.lidarReading, robot.leftDps, robot.rightDps )
+}
+
+func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
+	changedDirection := false
+	if robot.lidarReading > self.goalDistance {
+		changedDirection = self.ChangeDirection( Left )
+		fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+		robot.Move( -100, -50 )
+		self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
+	} else {
+		self.ClearCornerTurnAngle()
+		if robot.lidarReading < self.goalDistance {
+			changedDirection = self.ChangeDirection( Right )
+			fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			robot.Move( -50, -100 )
+		} else {
+			changedDirection = self.ChangeDirection( Forward )
+			robot.UniformMove( -100 )
+			fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+		}
+	}
+	return changedDirection
+}
+
+func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false {
-		if lidarReading >= OutOfBoundsDistanceConstant {
-			self.outOfBoundsDistance.AddSample( lidarReading )
+		if robot.lidarReading >= OutOfBoundsDistanceConstant {
+			self.outOfBoundsDistance.AddSample( robot.lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			self.Creep( lidarReading, gopigo3, loopRuntimeInSeconds )
+			if self.Creep( robot, loopRuntimeInSeconds ) == true {
+				self.AddToTotalDistance( robot.lidarReading )
+			}
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
 		self.measuredSide = true
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
 		self.outOfBoundsDistance.Clear()
-		UniformMove( gopigo3, -360 )
+		robot.UniformMove( -360 )
 	}
 	return self.measuredSide
 }
@@ -181,32 +251,17 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
-	//const LoopTimeInSecondsConstant = 1.0
-
+	robot := NewRobot( gopigo3, lidarSensor )
 	var currentSide Side
 	var previousTime time.Time
-	// var work *time.Ticker
-
 	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
-
 	currentSide.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
 		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
-	err := lidarSensor.Start()
-	if err != nil {
-		fmt.Println( "RobotMainLoop::Error::Failure starting Lidar Sensor: ", err )
-	}
-
-
-
 	gobot.Every( time.Millisecond, func() {
-		lidarReading, err := lidarSensor.Distance()
-		if err != nil {
-			fmt.Println( "RobotMainLoop::Error::Failure reading Lidar Sensor: ", err )
-		}
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
@@ -218,10 +273,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
 			fmt.Println( "Delta Time ", deltaTime )
-			currentSide.MeasureSide( gopigo3, lidarReading, deltaTime ) //, LoopTimeInSecondsConstant )
+			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
 		} else {
-			fmt.Println( "Success!" )
+			fmt.Println( "Success! ", currentSide.totalDistance )
 			gopigo3.Halt()
 		}
 	} )
