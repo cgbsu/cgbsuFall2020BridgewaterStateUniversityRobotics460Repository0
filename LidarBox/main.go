@@ -193,7 +193,7 @@ func ( self *Side ) TurnedCorner() bool {
 
 func ( self *Side ) ChangeDirection( to QuantativeDirection ) bool {
 	if self.currentDirection != to {
-		self.lastDirection = side.currentDirection
+		self.lastDirection = self.currentDirection
 		self.currentDirection = to
 		return true
 	}
@@ -263,7 +263,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	}
 	gobot.Every( time.Millisecond, func() {
 		if currentSide.goalDistanceFound == false {
-			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
+			currentSide.MeasureInitialDistance( robot )
 		} else if currentSide.measuredSide == false {
 			deltaTime := 0.0
 			if firstLoop == false {
@@ -300,7 +300,8 @@ func main() {
 		workerThread)
 	robot.Start()
 	defer func() { 
-		UniformMove( gopigo3, 0 )
+		gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
+		gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
 		robot.Stop()
 	}()
 }
