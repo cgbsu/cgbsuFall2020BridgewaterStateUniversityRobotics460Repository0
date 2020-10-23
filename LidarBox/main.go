@@ -161,7 +161,7 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
-			self.goalDistanceCalculator.AddSample( lidarReading )
+			self.goalDistanceCalculator.AddSample( robot.lidarReading )
 			if self.goalDistanceCalculator.AtDesiredSampleCount() {
 				self.goalDistance = self.goalDistanceCalculator.CalculateAverage()
 				self.goalDistanceFound = true
@@ -262,6 +262,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 	gobot.Every( time.Millisecond, func() {
+		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( robot )
 		} else if currentSide.measuredSide == false {
