@@ -140,7 +140,7 @@ func ( self *Side ) TurnedCorner() bool {
 	return self.cornerTurnAngle >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) Creep( lidarReading int, gopiogo3 *g.Driver, loopRuntimeInSeconds float64 ) {
+func ( self* Side ) Creep( lidarReading int, gopigo3 *g.Driver, loopRuntimeInSeconds float64 ) {
 	if lidarReading > self.goalDistance {
 		fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
 		Move( gopigo3, -100, -50 )
