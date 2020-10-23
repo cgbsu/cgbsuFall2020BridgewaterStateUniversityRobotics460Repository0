@@ -100,7 +100,7 @@ const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
 const GreaterThanMovementMax = 90.0
 
-type Side, struct { 
+type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
 	goalDistanceCalculator, outOfBoundDistance Average( int )
 	goalDistance, initialSpeed, initialMeasuringSpeed int
