@@ -131,16 +131,16 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 }
 
 func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, secondsToLoopRunTime float64 ) bool {
-	if side.outOfBoundsDistance.AtDesiredSampleCount() == false {
+	if self.outOfBoundsDistance.AtDesiredSampleCount() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
-			side.outOfBoundsDistance.AddSample( lidarReading )
+			self.outOfBoundsDistance.AddSample( lidarReading )
 		} else {
-			side.outOfBoundsDistance.Clear()
-			if lidarReading > side.goalDistance {
-				fmt.Println( "Greater lr: ", lidarReading, " gd: ", side.goalDistance )
+			self.outOfBoundsDistance.Clear()
+			if lidarReading > self.goalDistance {
+				fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
 				Move( gopigo3, -100, -50 )
-			} else if lidarReading < side.goalDistance {
-				fmt.Println( "Less lr: ", lidarReading, " gd: ", side.goalDistance )
+			} else if lidarReading < self.goalDistance {
+				fmt.Println( "Less lr: ", lidarReading, " gd: ", self.goalDistance )
 				Move( gopigo3, -50, -100 )
 			} else {
 				UniformMove( gopigo3, -100 )
@@ -150,7 +150,7 @@ func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, secondsToL
 		self.measuredSide = true
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
-		side.outOfBoundsDistance.Clear()
+		self.outOfBoundsDistance.Clear()
 		UniformMove( gopigo3, -360 )
 	}
 	return self.measuredSide
