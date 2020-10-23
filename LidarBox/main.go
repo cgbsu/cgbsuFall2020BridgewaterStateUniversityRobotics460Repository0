@@ -43,7 +43,7 @@ func DpsToDistance( dps int ) float64 {
 
 
 //Calculates the arclength the robot will travel given 2 dps's//
-func CalculateArcData( leftDps, rightDps int ) float64, float64 {
+func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	sidePolarity := 0
 	leftDistance := float64( DpsToDistance( leftDps ) )
 	rightDistance := float64( DpsToDistance( rightDps ) )
