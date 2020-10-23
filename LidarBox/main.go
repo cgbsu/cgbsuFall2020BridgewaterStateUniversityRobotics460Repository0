@@ -51,8 +51,7 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 		sidePolarity = 1
 	}
 	maxDistance := math.Max( leftDistance, rightDistance )
-	const DeltaDistanceConstant = leftDistance - rightDistance
-	theta := math.Atan( DeltaDistanceConstant / RobotWidthConstant )
+	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
 	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( mathPow( math.Cos( theta ), 2.0 ) - 1 ) )
 	radius := math.cos( theta ) * sidePolarity * magnitude
 	return radius, theta
