@@ -57,10 +57,6 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	return radius, theta
 }
 
-/*func Creep( ) {
-
-}*/
-
 type Average struct {
 	 buffer, samples, desiredSampleCount int 
 }
@@ -93,16 +89,16 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 	return self.samples >= self.desiredSampleCount
 }
 
-
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
-const GreaterThanMovementMax = 90.0
+const CornerTurnAngleConstant = 90.0
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
 	goalDistanceCalculator, outOfBoundsDistance Average
 	goalDistance, initialSpeed, initialMeasuringSpeed int
+	cornerTurnAngle float64
 }
 
 func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
@@ -130,23 +126,45 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 	return self.goalDistanceFound
 }
 
-func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, secondsToLoopRunTime float64 ) bool {
-	if self.outOfBoundsDistance.AtDesiredSampleCount() == false {
+func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopTimeInSeconds float64 ) bool {
+	angle, _ := CalculateArcData( leftDps, rightDps )
+	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
+	return self.TurnedCorner()
+}
+
+func ( self *Side ) ClearCornerTurnAngle() {
+	self.cornerTurnAngle = 0.0
+}
+
+func ( self *Side ) TurnedCorner() bool {
+	return self.cornerTurnAngle >= CornerTurnAngleConstant
+}
+
+func ( self* Side ) Creep( loopRuntimeInSeconds float64 ) {
+	if lidarReading > self.goalDistance {
+		fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
+		Move( gopigo3, -100, -50 )
+		self.UpdateCornerTurnAngle( -100, -50, loopRuntimeInSeconds )
+	} else {
+		self.ClearCornerTurnAngle()
+		if lidarReading < self.goalDistance {
+			fmt.Println( "Less lr: ", lidarReading, " gd: ", self.goalDistance )
+			Move( gopigo3, -50, -100 )
+		} else {
+			UniformMove( gopigo3, -100 )
+		}
+	}
+}
+
+func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, loopRuntimeInSeconds float64 ) bool {
+	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			if lidarReading > self.goalDistance {
-				fmt.Println( "Greater lr: ", lidarReading, " gd: ", self.goalDistance )
-				Move( gopigo3, -100, -50 )
-			} else if lidarReading < self.goalDistance {
-				fmt.Println( "Less lr: ", lidarReading, " gd: ", self.goalDistance )
-				Move( gopigo3, -50, -100 )
-			} else {
-				UniformMove( gopigo3, -100 )
-			}
+			Creep()
 		}
-	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
+	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
 		self.measuredSide = true
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
@@ -160,7 +178,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
-	const SecondsToLoopRunTime = float64( time.Second / LoopRuntimeConstant )
+	const LoopTimeInSecondsConstant = float64( time.Second / LoopRuntimeConstant )
 
 	var currentSide Side
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
@@ -175,7 +193,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure starting Lidar Sensor: ", err )
 	}
 
-	gobot.Every( time.Millisecond, func() {
+	work := gobot.Every( time.Millisecond, func() {
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println( "RobotMainLoop::Error::Failure reading Lidar Sensor: ", err )
@@ -183,13 +201,15 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
-			currentSide.MeasureSide( gopigo3, lidarReading, SecondsToLoopRunTime )
+			currentSide.MeasureSide( gopigo3, lidarReading, LoopTimeInSecondsConstant )
 		} else {
 			fmt.Println( "Success!" )
+			work.Stop()
 			gopigo3.Halt()
 		}
 	} )
 	defer func() {
+		work.Stop()
 		gopigo3.Halt()
 	}()
 }
