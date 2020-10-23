@@ -76,7 +76,7 @@ func ( self *Average ) CalculateAverage() int {
 	return self.buffer / self.samples
 }
 
-func ( self *Average ) AddSample( int sample ) {
+func ( self *Average ) AddSample( sample int ) {
 	self.buffer += sample
 	self.samples += 1
 }
@@ -105,14 +105,14 @@ type Side struct {
 	goalDistance, initialSpeed, initialMeasuringSpeed int
 }
 
-func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed ) {
+func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.goalDistanceCalculator.InitializeAverage( MaxInitializationSamplesConstant )
 	self.outOfBoundDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
 	self.initialSpeed = initialSpeed
 	self.initialMeasuringSpeed = initialMeasuringSpeed
 }
 
-func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int ) {
+func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int ) bool {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
 			self.goalDistanceCalculator.AddSample( lidarReading )
@@ -130,7 +130,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 	return self.goalDistanceFound
 }
 
-func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime int ) {
+func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime int ) bool {
 	if side.outOfBoundsDistance.AtDesiredSampleCount() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
 			side.outOfBoundsDistance.AddSample( lidarReading )
