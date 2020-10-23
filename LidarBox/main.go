@@ -181,7 +181,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
-	const LoopTimeInSecondsConstant = .1
+	const LoopTimeInSecondsConstant = 1.0
 
 	var currentSide Side
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
