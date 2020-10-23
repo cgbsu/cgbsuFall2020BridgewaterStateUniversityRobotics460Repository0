@@ -101,7 +101,7 @@ const GreaterThanMovementMax = 90.0
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
-	goalDistanceCalculator, outOfBoundDistance Average
+	goalDistanceCalculator, outOfBoundsDistance Average
 	goalDistance, initialSpeed, initialMeasuringSpeed int
 }
 
