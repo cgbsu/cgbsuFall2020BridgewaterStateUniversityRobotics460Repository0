@@ -130,7 +130,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopRuntimeInSeconds float64 ) bool {
 	_, angle := CalculateArcData( leftDps, rightDps )
 	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
-	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
+	self.cornerTurnAngle += ( angle / loopRuntimeInSeconds )
 	return self.TurnedCorner()
 }
 
@@ -181,9 +181,13 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
-	const LoopTimeInSecondsConstant = 1.0
+	//const LoopTimeInSecondsConstant = 1.0
 
 	var currentSide Side
+	var previousTime Time
+	var work *time.Ticker
+
+	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
 
 	currentSide.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
@@ -196,7 +200,12 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure starting Lidar Sensor: ", err )
 	}
 
-	gobot.Every( time.Millisecond, func() {
+
+
+	work = gobot.Every( time.Millisecond, func() {
+		if firstLoop { 
+			previousTimeTime = time.Now()
+		}
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println( "RobotMainLoop::Error::Failure reading Lidar Sensor: ", err )
@@ -204,7 +213,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
-			currentSide.MeasureSide( gopigo3, lidarReading, LoopTimeInSecondsConstant )
+			currentTime := time.Now()
+			currentSide.MeasureSide( gopigo3, lidarReading, currentTime - previousTime ) //, LoopTimeInSecondsConstant )
+			previousTime = currentTime
 		} else {
 			fmt.Println( "Success!" )
 			gopigo3.Halt()
