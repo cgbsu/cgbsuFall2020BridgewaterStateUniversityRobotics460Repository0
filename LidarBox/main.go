@@ -137,7 +137,7 @@ func ( self *Side ) ClearCornerTurnAngle() {
 }
 
 func ( self *Side ) TurnedCorner() bool {
-	return self.cornerTurnAngle >= CornerTurnAngleConstant
+	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
 func ( self* Side ) Creep( lidarReading int, gopigo3 *g.Driver, loopRuntimeInSeconds float64 ) {
