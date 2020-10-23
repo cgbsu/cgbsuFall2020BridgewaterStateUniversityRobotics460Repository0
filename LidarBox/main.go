@@ -131,7 +131,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 	return self.goalDistanceFound
 }
 
-func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime )
+func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime int )
 {
 	if side.outOfBoundsDistance.AtDesiredSampleCount() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
