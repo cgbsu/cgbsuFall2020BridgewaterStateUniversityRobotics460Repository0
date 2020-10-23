@@ -185,7 +185,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 	var currentSide Side
 	var previousTime time.Time
-	var work *time.Ticker
+	// var work *time.Ticker
 
 	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
@@ -202,7 +202,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 
 
 
-	work = gobot.Every( time.Millisecond, func() {
+	gobot.Every( time.Millisecond, func() {
 		if firstLoop {
 			previousTime = time.Now()
 		}
@@ -223,7 +223,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		}
 	} )
 	defer func() {
-		work.Stop()
+		//work.Stop()
 		gopigo3.Halt()
 	}()
 }
