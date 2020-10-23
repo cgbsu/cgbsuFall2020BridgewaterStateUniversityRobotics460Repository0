@@ -88,12 +88,12 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	return radius, theta
 }
 
-func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int, leftDps, rightDps int ) {
+func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int, leftDps, rightDps int ) float64 {
 	radius, theta := CalculateArcData( leftDps, rightDps )
 	beginSide := radius + float64( beginningLidarReading )
 	endSide := radius + float64( endingLidarReading )
 	//Law of cosines//
-	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + rad, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
+	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
 }
 
 type Average struct {
@@ -191,10 +191,10 @@ func ( self *Side ) TurnedCorner() bool {
 	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) ChangeDirection( to QuantativeDirection ) bool {
-	if side.currentDirection != to {
-		side.lastDirection = side.currentDirection
-		side.currentDirection = to
+func ( self *Side ) ChangeDirection( to QuantativeDirection ) bool {
+	if self.currentDirection != to {
+		self.lastDirection = side.currentDirection
+		self.currentDirection = to
 		return true
 	}
 	return false
@@ -234,7 +234,7 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 		} else {
 			self.outOfBoundsDistance.Clear()
 			if self.Creep( robot, loopRuntimeInSeconds ) == true {
-				self.AddToTotalDistance( robot.lidarReading )
+				self.AddToTotalDistance( robot )
 			}
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
