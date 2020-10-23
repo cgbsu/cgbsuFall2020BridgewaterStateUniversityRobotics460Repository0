@@ -146,7 +146,7 @@ func ( self *Side ) MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, se
 				UniformMove( gopigo3, -100 )
 			}
 		}
-	} else if outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
+	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
 		self.measuredSide = true
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
