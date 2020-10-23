@@ -107,7 +107,7 @@ type Side struct {
 
 func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.goalDistanceCalculator.InitializeAverage( MaxInitializationSamplesConstant )
-	self.outOfBoundDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
+	self.outOfBoundsDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
 	self.initialSpeed = initialSpeed
 	self.initialMeasuringSpeed = initialMeasuringSpeed
 }
@@ -130,7 +130,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 	return self.goalDistanceFound
 }
 
-func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime int ) bool {
+func ( self *Side ) MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunTime int ) bool {
 	if side.outOfBoundsDistance.AtDesiredSampleCount() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
 			side.outOfBoundsDistance.AddSample( lidarReading )
