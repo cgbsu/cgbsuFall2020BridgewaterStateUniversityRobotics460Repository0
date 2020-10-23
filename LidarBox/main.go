@@ -47,8 +47,8 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	sidePolarity := 0
 	leftDistance := float64( DpsToDistance( leftDps ) )
 	rightDistance := float64( DpsToDistance( rightDps ) )
-	if sidePolarity = -1; leftDistance > rightDistance {
-		sidePolarity = 1
+	if sidePolarity = -1.0; leftDistance > rightDistance {
+		sidePolarity = 1.0
 	}
 	maxDistance := math.Max( leftDistance, rightDistance )
 	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
@@ -57,9 +57,9 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	return radius, theta
 }
 
-func Creep( ) {
+/*func Creep( ) {
 
-}
+}*/
 
 type Average struct {
 	 buffer, samples, desiredSampleCount int 
@@ -69,7 +69,7 @@ func ( self *Average ) InitializeAverage( desiredSampleCount int ) {
 	self.desiredSampleCount = desiredSampleCount
 }
 
-func ( self *Average ) CalculateAverage() {
+func ( self *Average ) CalculateAverage() int {
 	if self.samples == 0 {
 		return 0
 	}
@@ -86,7 +86,7 @@ func ( self *Average ) Clear() {
 	self.samples = 0
 }
 
-func ( self *Average ) AtDesiredSampleCount() {
+func ( self *Average ) AtDesiredSampleCount() bool {
 	if self.desiredSampleCount == 0 {
 		return true
 	}
