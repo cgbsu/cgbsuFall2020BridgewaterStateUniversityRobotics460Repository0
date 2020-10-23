@@ -157,7 +157,7 @@ func ( self* Side ) Creep( lidarReading int, gopigo3 *g.Driver, loopRuntimeInSec
 }
 
 func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, loopRuntimeInSeconds float64 ) bool {
-	fmt.Println( "Turned Corner: ", self.TurnedCorner() )
+	fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false {
 		if lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( lidarReading )
