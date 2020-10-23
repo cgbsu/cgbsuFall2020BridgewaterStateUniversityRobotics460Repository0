@@ -62,7 +62,7 @@ func Creep( ) {
 
 }
 
-type Average, struct {
+type Average struct {
 	 buffer, samples, desiredSampleCount int 
 }
 
