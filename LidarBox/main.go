@@ -148,13 +148,13 @@ func MeasureSide( gopigo3 *g.Driver, side *Side, lidarReading, secondsToLoopRunT
 			}
 		}
 	} else if outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
-		return ( self.measuredSide = true )
+		self.measuredSide = true
 	} else {
 		fmt.Println( "WHAT DO I DO!?" )
 		side.outOfBoundsDistance.Clear()
 		UniformMove( gopigo3, -360 )
 	}
-	return false
+	return self.measuredSide
 }
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
