@@ -113,7 +113,7 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed ) {
 	self.initialMeasuringSpeed = initialMeasuringSpeed
 }
 
-func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading ) {
+func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int ) {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
 			self.goalDistanceCalculator.AddSample( lidarReading )
