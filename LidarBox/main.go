@@ -175,7 +175,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure starting Lidar Sensor: ", err )
 	}
 
-	work := gobot.Every( time.Millisecond, func() {
+	gobot.Every( time.Millisecond, func() {
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println( "RobotMainLoop::Error::Failure reading Lidar Sensor: ", err )
@@ -185,12 +185,11 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		} else if currentSide.measuredSide == false {
 			currentSide.MeasureSide( gopigo3, lidarReading, SecondsToLoopRunTime )
 		} else {
-			fmt.PrintLn( "Success!" )
-			work.CallCancelFunc()
+			fmt.Println( "Success!" )
+			gopigo3.Halt()
 		}
 	} )
 	defer func() {
-		work.CallCancelFunc()
 		gopigo3.Halt()
 	}()
 }
