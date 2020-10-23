@@ -36,17 +36,17 @@ func Move( gopigo3 *g.Driver, leftDps int, rightDps int ) {
 }
 
 //Calculates a robot wheel moving at a given dps will travel.//
-func DpsToDistance( dps int ) float32 {
-	return float32( dps ) * ( 2.0 * math.Pi * 
+func DpsToDistance( dps int ) float64 {
+	return float64( dps ) * ( 2.0 * math.Pi * 
 			RobotWheelRadiusConstant / 360.0 )
 }
 
 
 //Calculates the arclength the robot will travel given 2 dps's//
-func CalculateArcData( leftDps, rightDps int ) {
+func CalculateArcData( leftDps, rightDps int ) float64, float64 {
 	sidePolarity := 0
-	leftDistance := float32( DpsToDistance( leftDps ) )
-	rightDistance := float32( DpsToDistance( rightDps ) )
+	leftDistance := float64( DpsToDistance( leftDps ) )
+	rightDistance := float64( DpsToDistance( rightDps ) )
 	if sidePolarity = -1; leftDistance > rightDistance {
 		sidePolarity = 1
 	}
