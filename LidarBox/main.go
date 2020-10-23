@@ -183,7 +183,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
-			currentSide.MeasureSide( gopigo3, lidarReading, SecondsToLoopRunTime ) == true
+			currentSide.MeasureSide( gopigo3, lidarReading, SecondsToLoopRunTime )
 		} else {
 			fmt.PrintLn( "Success!" )
 			work.CallCancelFunc()
