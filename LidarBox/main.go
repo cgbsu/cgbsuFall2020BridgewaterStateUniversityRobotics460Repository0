@@ -210,11 +210,12 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( gopigo3, lidarReading )
 		} else if currentSide.measuredSide == false {
+			deltaTime := time.Since( previousTime ).Seconds()
 			if firstLoop {
 				previousTime = time.Now()
+				deltaTime = 0.0
 				firstLoop = true
 			}
-			deltaTime := time.Since( previousTime ).Seconds()
 			fmt.Println( "Delta Time ", deltaTime )
 			currentSide.MeasureSide( gopigo3, lidarReading, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
