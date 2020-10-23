@@ -136,7 +136,6 @@ func main() {
 		[]gobot.Connection{raspberryPi},
 		[]gobot.Device{gopigo3, lidarSensor, lightSensor},
 		workerThread)
-	Try: 
 	robot.Start()
 	defer func() { 
 		UniformMove( gopigo3, 0 )
