@@ -92,8 +92,7 @@ func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int
 	beginSide := radius + float64( beginningLidarReading )
 	endSide := radius + float64( endingLidarReading )
 	//Law of cosines//
-	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + rad, 2.0 ) 
-			- ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
+	return math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + rad, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
 }
 
 type Average struct {
