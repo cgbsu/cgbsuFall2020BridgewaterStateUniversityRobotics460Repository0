@@ -66,7 +66,7 @@ type Average struct {
 	 buffer, samples, desiredSampleCount int 
 }
 
-func ( self Average* ) InitializeAverage( desiredSampleCount int ) {
+func ( self *Average ) InitializeAverage( desiredSampleCount int ) {
 	self.desiredSampleCount = desiredSampleCount
 }
 
