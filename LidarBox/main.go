@@ -127,7 +127,7 @@ func ( self *Side ) MeasureInitialDistance( gopigo3 *g.Driver, lidarReading int 
 }
 
 func ( self *Side ) UpdateCornerTurnAngle( leftDps, rightDps int, loopRuntimeInSeconds float64 ) bool {
-	angle, _ := CalculateArcData( leftDps, rightDps )
+	_, angle := CalculateArcData( leftDps, rightDps )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
 	return self.TurnedCorner()
 }
