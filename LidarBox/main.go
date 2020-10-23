@@ -180,8 +180,7 @@ func ( self *Side ) MeasureSide( gopigo3 *g.Driver, lidarReading int, loopRuntim
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
-	const LoopRuntimeConstant = time.Milli
-	second
+	const LoopRuntimeConstant = time.Millisecond
 	const LoopTimeInSecondsConstant = .001
 
 	var currentSide Side
