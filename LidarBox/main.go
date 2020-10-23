@@ -27,7 +27,7 @@ type Robot struct {
 func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
 	robot := new( Robot )
 	robot.gopigo3 = gopigo3
-	self.lidarSensor = lidarSensor
+	robot.lidarSensor = lidarSensor
 	err := self.lidarSensor.Start()
 	if err != nil {
 		fmt.Println( "NewRobot::Error::Failure starting Lidar Sensor: ", err )
@@ -43,15 +43,15 @@ const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func ( self *Robot ) UniformMove( dps int ) {
-	gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
-	gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
+	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
+	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
 	self.rightDps = dps
 }
 
 func ( self *Robot ) Move( leftDps int, rightDps int ) {
-	gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
-	gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
+	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
+	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
 	self.leftDps = leftDps
 	self.rightDps = rightDps
 }
