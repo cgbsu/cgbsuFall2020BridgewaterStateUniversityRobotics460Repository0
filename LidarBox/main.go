@@ -141,5 +141,5 @@ func main() {
 	defer func() { 
 		UniformMove( gopigo3, 0 )
 		robot.Stop()
-	}
+	}()
 }
