@@ -57,10 +57,11 @@ func ( self *Robot ) Move( leftDps int, rightDps int ) {
 }
 
 func ( self *Robot ) ReadLidar() int {
-	self.lidarReading, err := lidarSensor.Distance()
+	lidarReading, err := lidarSensor.Distance()
 	if err != nil {
 		fmt.Println( "Robot::ReadLidar::Error::Failure reading Lidar Sensor: ", err )
 	}
+	self.lidarReading = lidarReading
 }
 
 //Calculates a robot wheel moving at a given dps will travel.//
