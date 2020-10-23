@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"gobot.io/x/gobot"
-	"gobot.io/x/gobot/drivers/aio"
-	"gobot.io/x/gobot/drivers/i2c"
 	g "gobot.io/x/gobot/platforms/dexter/gopigo3"
 	"gobot.io/x/gobot/platforms/raspi"
 	// "math"
@@ -19,7 +16,7 @@ func main() {
 	}
 	robot := gobot.NewRobot("Gopigo Pi4 Bot",
 		[]gobot.Connection{raspberryPi},
-		[]gobot.Device{gopigo3, lidarSensor, lightSensor},
+		[]gobot.Device{gopigo3},
 		workerThread)
 	robot.Start()
 	robot.Stop()
