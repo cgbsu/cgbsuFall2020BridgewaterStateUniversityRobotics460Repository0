@@ -136,6 +136,6 @@ func main() {
 		[]gobot.Connection{raspberryPi},
 		[]gobot.Device{gopigo3, lidarSensor, lightSensor},
 		workerThread)
-
 	robot.Start()
+	halt robot.Stop()
 }
