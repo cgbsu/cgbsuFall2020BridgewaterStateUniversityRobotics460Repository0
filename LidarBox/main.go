@@ -368,6 +368,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 	gobot.Every( time.Millisecond, func() {
+		if currentSide == nil {
+			fmt.Println( "ADSADADAS" )
+		}
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( robot )
