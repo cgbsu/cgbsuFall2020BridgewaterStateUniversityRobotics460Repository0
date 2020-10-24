@@ -254,12 +254,12 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 				self.goalDistanceFound = true
 				self.previousLidarReading = self.goalDistance
 			}
-			fmt.Println( "Hey robot move forward!" )
 			robot.UniformMove( self.initialMeasuringSpeed )
 		}
 	} else if robot.lidarReading < StartDistanceConstant {
 		self.foundBox = true
 	} else {
+		fmt.Println( "Hey robot move forward!" )
 		robot.UniformMove( self.initialSpeed )
 	}
 	return self.goalDistanceFound
