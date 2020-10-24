@@ -134,7 +134,7 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	rightDistance := float64( DpsToDistance( rightDps ) )
 	if leftDistance == rightDistance {
 		fmt.Println( "ARC DATA Sent me the wrong thing! Sending back this distance" )
-		return leftDistance
+		return leftDistance, 0.0
 	}
 	sidePolarity := 0.0
 	if sidePolarity = -1.0; leftDistance > rightDistance {
