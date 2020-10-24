@@ -281,7 +281,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 		} else {
 			// self.ClearCornerTurnAngle()
-			if deltaSample < -TurnTolerenceConstant // averageSample < self.goalDistance {
+			if deltaSample < -TurnTolerenceConstant {// averageSample < self.goalDistance {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 				changedDirection = robot.Move( -50, -100 )
