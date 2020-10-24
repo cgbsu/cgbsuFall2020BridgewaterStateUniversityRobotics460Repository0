@@ -103,7 +103,7 @@ func ( self *Robot ) ChangeDirection( to QuantativeDirection ) bool {
 	return false
 }
 
-func ( self *Robot ) TimeTraveledWithDps() bool {
+func ( self *Robot ) TimeTraveledWithDps() float64 {
 	return time.Since( self.startTimeTravelingWithDps ).Seconds()
 }
 
