@@ -206,7 +206,7 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
-const CornerTurnAngleConstant = math.Pi / 2.0//90.0
+const CornerTurnAngleConstant = .24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 
 type Side struct { 
