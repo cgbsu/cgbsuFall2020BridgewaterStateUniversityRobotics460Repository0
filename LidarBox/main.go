@@ -225,11 +225,12 @@ const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 const MaxLeftTurnsConstant = 25
+const ResetCountMaximumConstant = 3
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
-	turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
+	resetCount, turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
 	lastDirection, currentDirection QuantativeDirection
 }
@@ -337,21 +338,36 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 	return self.measuredSide
 }
 
+func ( self *Side ) Reset( robot *Robot ) bool {
+	robot.UniformMove( -100 )
+	resetCount += 1
+	if resetCount >= ResetCountMaximumConstant {
+		return true
+	}
+	return false
+}
+
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
 	robot := NewRobot( gopigo3, lidarSensor )
-	var currentSide Side
+	const MaxSideConstant = 4
+	var sides [ MaxSideConstant ]Side
+	for _, side := range sides {
+		side.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
+	}
+	var ticker *Time.ticker
+	currentSideIndex := 0
+	currentSide := &sides[ currentSideIndex ]
 	var previousTime time.Time
 	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
-	currentSide.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
 		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
-	gobot.Every( time.Millisecond, func() {
+	ticker = gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( robot )
@@ -366,9 +382,18 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			//fmt.Println( "Delta Time ", deltaTime )
 			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
-		} else {
-			fmt.Println( "Success! ", currentSide.totalDistance )
+		} else currentSide.Reset( robot ) == false {
+			fmt.Println( "Side distance ", currentSide.totalDistance )
 			gopigo3.Halt()
+		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
+			currentSideIndex += 1
+			currentSide = & sides[ currentSideIndex ]
+		} else {
+			for _, side := range sides {
+				fmt.Println( "Side Distance ", side.totalDistance )
+			}
+			fmt.Println( "DONE!" )
+			ticker.Stop()
 		}
 	} )
 	defer func() {
