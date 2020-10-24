@@ -222,7 +222,7 @@ const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 
 type Side struct { 
-	foundBox, goalDistanceFound, measuredSide bool
+	firstReading, foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
 	previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
@@ -314,8 +314,9 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			if self.Creep( robot, loopRuntimeInSeconds ) == true {
+			if self.Creep( robot, loopRuntimeInSeconds ) == true || self.firstReading == false {
 				self.AddToTotalDistance( robot )
+				self.firstReading = true
 			}
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
