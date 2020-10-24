@@ -382,7 +382,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			//fmt.Println( "Delta Time ", deltaTime )
 			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
-		} else currentSide.Reset( robot ) == false {
+		} else if currentSide.Reset( robot ) == false {
 			fmt.Println( "Side distance ", currentSide.totalDistance )
 			gopigo3.Halt()
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
