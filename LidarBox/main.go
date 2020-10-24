@@ -357,7 +357,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	for _, side := range sides {
 		side.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
-	var ticker *time.Ticker
+	// var ticker *time.Ticker
 	currentSideIndex := 0
 	currentSide := &sides[ currentSideIndex ]
 	var previousTime time.Time
@@ -367,7 +367,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	if voltageErr != nil {
 		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
-	ticker = gobot.Every( time.Millisecond, func() {
+	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( robot )
