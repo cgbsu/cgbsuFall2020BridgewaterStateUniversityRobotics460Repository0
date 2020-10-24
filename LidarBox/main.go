@@ -204,7 +204,7 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 }
 
 
-const TurnTolerence = 3
+const TurnTolerenceConstant = 3
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
@@ -252,7 +252,7 @@ func ( self *Side ) UpdateCornerTurnAngle( robot *Robot, loopRuntimeInSeconds fl
 	_, angle := CalculateArcData( robot.leftDps, robot.rightDps )
 	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
-	fmt.Println( "CornerTurnAngle ", self.cornerTurnAngle )
+	// fmt.Println( "CornerTurnAngle ", self.cornerTurnAngle )
 	return self.TurnedCorner()
 }
 
@@ -274,13 +274,14 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	self.readyToTurnSamples.AddSample( robot.lidarReading )
 	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
 		averageSample := self.readyToTurnSamples.CalculateAverage()
-		if averageSample > self.goalDistance {
+		deltaSample := averageSample - self.goalDistance
+		if deltaSample > TurnTolerenceConstant { // averageSample > self.goalDistance {
 			//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			changedDirection = robot.Move( -100, -50 )
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 		} else {
 			// self.ClearCornerTurnAngle()
-			if averageSample < self.goalDistance {
+			if deltaSample < -TurnTolerenceConstant // averageSample < self.goalDistance {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 				changedDirection = robot.Move( -50, -100 )
