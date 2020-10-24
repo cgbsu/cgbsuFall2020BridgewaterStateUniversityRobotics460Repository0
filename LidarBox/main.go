@@ -54,6 +54,11 @@ const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func ( self *Robot ) UniformMove( dps int ) bool {
+	if gopigo3 == nil {
+		fmt.Println( "UT OH" )
+	} else {
+		fmt.Println( "HERE" )
+	}
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
@@ -259,9 +264,6 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 	} else if robot.lidarReading < StartDistanceConstant {
 		self.foundBox = true
 	} else {
-		if robot == nil { 
-			fmt.Println( "CRAP" )
-		}
 		robot.UniformMove( self.initialSpeed )
 	}
 	return self.goalDistanceFound
