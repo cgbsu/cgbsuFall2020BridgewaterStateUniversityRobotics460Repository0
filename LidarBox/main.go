@@ -148,10 +148,10 @@ func CalculateTraveledArcBoxDistance( endingLidarReading int, robot *Robot ) flo
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	beginSide := radius + float64( robot.lidarReading )
 	endSide := radius + float64( endingLidarReading )
-	fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
+	// fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
-	fmt.Println( "Result: ", result )
+	// fmt.Println( "Result: ", result )
 	return result
 }
 
@@ -164,7 +164,7 @@ func CalculateTraveledBoxDistance( endingLidarReading int, robot *Robot ) float6
 	result := 0.0
 	if robot.leftDps == robot.rightDps {
 		result = CalculateTraveledLineBoxDistance( endingLidarReading, robot )
-		fmt.Println( "Line calc ", result )
+		// fmt.Println( "Line calc ", result )
 	} else {
 		result = CalculateTraveledArcBoxDistance( endingLidarReading, robot )
 	}
@@ -250,6 +250,7 @@ func ( self *Side ) UpdateCornerTurnAngle( robot *Robot, loopRuntimeInSeconds fl
 	_, angle := CalculateArcData( robot.leftDps, robot.rightDps )
 	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
+	fmt.Println( "CornerTurnAngle ", self.cornerTurnAngle )
 	return self.TurnedCorner()
 }
 
@@ -323,9 +324,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
 	currentSide.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
-	fmt.Println( "Voltage: ", voltage )
+	// fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
-		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
+		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
