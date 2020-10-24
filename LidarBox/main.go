@@ -207,7 +207,7 @@ const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 2.0//90.0
-const TurnSamplesConstant = 20
+const TurnSamplesConstant = 200
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
