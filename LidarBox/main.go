@@ -393,7 +393,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				fmt.Println( "Side Distance ", side.totalDistance )
 			}
 			fmt.Println( "DONE!" )
-			ticker.Stop()
+			// ticker.Stop()
 		}
 	} )
 	defer func() {
