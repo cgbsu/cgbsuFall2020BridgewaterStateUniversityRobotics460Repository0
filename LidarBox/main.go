@@ -140,7 +140,7 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
 	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( math.Pow( math.Cos( theta ), 2.0 ) - 1 ) )
 	radius := math.Cos( theta ) * sidePolarity * magnitude
-	// fmt.Println( "leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
+	fmt.Println( "ARC DATA leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
 	return radius, theta
 }
 
@@ -148,19 +148,20 @@ func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) f
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	beginSide := radius + float64( robot.lidarReading )
 	endSide := radius + float64( beginingLidarReading )
-	// fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
-	// fmt.Println( "Result: ", result )
+	fmt.Println( "ORIGINAL beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius, " result ", result )
 	return result
 }
 
 func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	//Pythagorean theorem, delta distance from box
+	fmt.Println( "LINE CALC distance ", robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ) )
 	return math.Sqrt( math.Pow( float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
 }
 
 func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
+	fmt.Println( "INVERTED" )
 	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
 }
 
@@ -169,11 +170,13 @@ func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot ) floa
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if robot.leftDps == robot.rightDps {
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
-		// fmt.Println( "Line calc ", result )
+		fmt.Println( "Line calc ", result )
 	} else if radius < 0.0 {
 		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
+		fmt.Println( "Inverted calc ", result )
 	} else {
 		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		fmt.Println( "Arc calc ", result )
 	}
 	return result
 }
