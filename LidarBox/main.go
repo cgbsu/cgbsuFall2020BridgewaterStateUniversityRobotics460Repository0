@@ -50,7 +50,7 @@ func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
 const RobotWidthConstant = 13
 const RobotWheelRadiusConstant = 6.5
 
-const StartDistanceConstant = 20//29.4
+const StartDistanceConstant = 40//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func ( self *Robot ) UniformMove( dps int ) bool {
