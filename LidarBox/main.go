@@ -75,6 +75,7 @@ func ( self *Robot ) ContinueMoving() {
 }
 
 func ( self *Robot ) Move( leftDps, rightDps int ) bool {
+	fmt.Println( "DPS ", leftDps, " ", rightDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
 	changedDirection := false
