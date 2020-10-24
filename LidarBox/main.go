@@ -224,11 +224,12 @@ const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
+const MaxLeftTurnsConstant = 25
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
-	previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
+	turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
 	lastDirection, currentDirection QuantativeDirection
 }
@@ -293,12 +294,14 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 			//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			changedDirection = robot.Move( -100, -50 )
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
+			self.turnLeftCount += 1
 		} else {
 			// self.ClearCornerTurnAngle()
 			if deltaSample < -TurnTolerenceConstant {// averageSample < self.goalDistance {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 				changedDirection = robot.Move( -50, -100 )
+				self.turnLeftCount -= 1
 			} else {
 				changedDirection = robot.UniformMove( -100 )
 				//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
@@ -313,7 +316,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 
 func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	//fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
-	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false {
+	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false && self.turnLeftCount < MaxLeftTurnsConstant {
 		if robot.lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
 		} else {
@@ -323,7 +326,7 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 				self.AddToTotalDistance( robot, previousDirection )
 			}
 		}
-	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
+	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true || self.turnLeftCount >= MaxLeftTurnsConstant {
 		self.measuredSide = true
 	} else {
 		//fmt.Println( "WHAT DO I DO!?" )
