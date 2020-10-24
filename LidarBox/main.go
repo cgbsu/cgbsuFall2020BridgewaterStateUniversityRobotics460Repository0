@@ -69,6 +69,11 @@ func Abs( number int ) int {
 	return number
 }
 
+func ( self *Robot ) ContinueMoving() {
+	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, self.leftDps )
+	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, self.rightDps )
+}
+
 func ( self *Robot ) Move( leftDps, rightDps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
@@ -202,10 +207,11 @@ const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 2.0//90.0
+const TurnSamplesConstant = 20
 
 type Side struct { 
 	foundBox, goalDistanceFound, measuredSide bool
-	goalDistanceCalculator, outOfBoundsDistance Average
+	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
 	previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
 	lastDirection, currentDirection QuantativeDirection
@@ -214,6 +220,7 @@ type Side struct {
 func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.goalDistanceCalculator.InitializeAverage( MaxInitializationSamplesConstant )
 	self.outOfBoundsDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
+	self.readyToTurnSamples.InitializeAverage( TurnSamplesConstant )
 	self.initialSpeed = initialSpeed
 	self.initialMeasuringSpeed = initialMeasuringSpeed
 	self.lastDirection = Forward
@@ -261,19 +268,25 @@ func ( self* Side ) AddToTotalDistance( robot *Robot ) {
 
 func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	changedDirection := false
-	if robot.lidarReading > self.goalDistance {
-		//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
-		changedDirection = robot.Move( -100, -50 )
-		self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
-	} else {
-		self.ClearCornerTurnAngle()
-		if robot.lidarReading < self.goalDistance {
-			//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
-			changedDirection = robot.Move( -50, -100 )
+	self.readyToTurnSamples.AddSample( robot.lidarReading )
+	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
+		self.readyToTurnSamples.Clear()
+		if robot.lidarReading > self.goalDistance {
+			//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			changedDirection = robot.Move( -100, -50 )
+			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 		} else {
-			changedDirection = robot.UniformMove( -100 )
-			//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			self.ClearCornerTurnAngle()
+			if robot.lidarReading < self.goalDistance {
+				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+				changedDirection = robot.Move( -50, -100 )
+			} else {
+				changedDirection = robot.UniformMove( -100 )
+				//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+			}
 		}
+	} else {
+		robot.ContinueMoving()
 	}
 	return changedDirection
 }
