@@ -54,11 +54,7 @@ const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func ( self *Robot ) UniformMove( dps int ) bool {
-	if self.gopigo3 == nil {
-		fmt.Println( "UT OH" )
-	} else {
-		fmt.Println( "HERE" )
-	}
+	fmt.Println( dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
