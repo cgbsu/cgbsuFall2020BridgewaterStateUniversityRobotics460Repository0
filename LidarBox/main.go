@@ -340,8 +340,8 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 
 func ( self *Side ) Reset( robot *Robot ) bool {
 	robot.UniformMove( -100 )
-	resetCount += 1
-	if resetCount >= ResetCountMaximumConstant {
+	self.resetCount += 1
+	if self.resetCount >= ResetCountMaximumConstant {
 		return true
 	}
 	return false
