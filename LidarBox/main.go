@@ -165,13 +165,13 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
 }
 
-func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
+func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
 	_, theta := CalculateArcData( robot.leftDps, robot.rightDps )
-	if robot.leftDps == robot.rightDps {
+	if direction == Forward {
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
-	} else if theta < 0.0 {
+	} else if direction == Left {
 		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Inverted calc ", result )
 	} else {
@@ -222,7 +222,7 @@ const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 
 type Side struct { 
-	firstReading, foundBox, goalDistanceFound, measuredSide bool
+	foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
 	previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
@@ -274,8 +274,8 @@ func ( self *Side ) TurnedCorner() bool {
 	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) AddToTotalDistance( robot *Robot ) {
-	self.totalDistance += CalculateTraveledBoxDistance( self.previousLidarReading, robot )
+func ( self* Side ) AddToTotalDistance( robot *Robot, QuantativeDirection robotDirection ) {
+	self.totalDistance += CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection )
 	self.previousLidarReading = robot.lidarReading
 }
 
@@ -314,9 +314,9 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			if self.Creep( robot, loopRuntimeInSeconds ) == true || self.firstReading == false {
-				self.AddToTotalDistance( robot )
-				self.firstReading = true
+			previousDirection := robot.currentDirection
+			if self.Creep( robot, loopRuntimeInSeconds ) == true {
+				self.AddToTotalDistance( robot, previousDirection )
 			}
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true {
