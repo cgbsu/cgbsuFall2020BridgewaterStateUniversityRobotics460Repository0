@@ -226,11 +226,12 @@ const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 const MaxLeftTurnsConstant = 25
 const ResetCountMaximumConstant = 3
+const MaxTurnRestConstant = 20
 
 type Side struct { 
-	foundBox, goalDistanceFound, measuredSide bool
+	needsToTurn, foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
-	resetCount, turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
+	turnResetCount, resetCount, turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
 	lastDirection, currentDirection QuantativeDirection
 }
@@ -328,7 +329,10 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 				self.AddToTotalDistance( robot, previousDirection )
 			}
 		}
-	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant || self.TurnedCorner() == true || self.turnLeftCount >= MaxLeftTurnsConstant {
+	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
+		self.needsToTurn = true
+		self.measuredSide = true
+	} else if self.TurnedCorner() == true || self.turnLeftCount >= MaxLeftTurnsConstant {
 		self.measuredSide = true
 	} else {
 		//fmt.Println( "WHAT DO I DO!?" )
@@ -339,10 +343,19 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 }
 
 func ( self *Side ) Reset( robot *Robot ) bool {
-	robot.UniformMove( -100 )
-	self.resetCount += 1
-	if self.resetCount >= ResetCountMaximumConstant {
-		return true
+	if self.needsToTurn == true {
+		if self.turnResetCount < MaxTurnRestConstant {
+			robot.Move( -100, -50 )
+			self.turnResetCount += 1
+		} else {
+			self.needsToTurn = false
+		}
+	} else {
+		robot.UniformMove( 100 )
+		self.resetCount += 1
+		if self.resetCount >= ResetCountMaximumConstant {
+			return true
+		}
 	}
 	return false
 }
