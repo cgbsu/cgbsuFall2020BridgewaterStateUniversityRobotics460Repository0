@@ -144,10 +144,10 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	return radius, theta
 }
 
-func CalculateTraveledArcBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	beginSide := radius + float64( robot.lidarReading )
-	endSide := radius + float64( endingLidarReading )
+	endSide := radius + float64( beginingLidarReading )
 	// fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
@@ -155,18 +155,25 @@ func CalculateTraveledArcBoxDistance( endingLidarReading int, robot *Robot ) flo
 	return result
 }
 
-func CalculateTraveledLineBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	//Pythagorean theorem, delta distance from box
-	return math.Sqrt( math.Pow( float64( endingLidarReading - robot.lidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
+	return math.Sqrt( math.Pow( float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
 }
 
-func CalculateTraveledBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
+	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
+}
+
+func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	result := 0.0
+	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if robot.leftDps == robot.rightDps {
-		result = CalculateTraveledLineBoxDistance( endingLidarReading, robot )
+		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		// fmt.Println( "Line calc ", result )
+	} else if radius < 0.0 {
+		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
 	} else {
-		result = CalculateTraveledArcBoxDistance( endingLidarReading, robot )
+		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 	}
 	return result
 }
