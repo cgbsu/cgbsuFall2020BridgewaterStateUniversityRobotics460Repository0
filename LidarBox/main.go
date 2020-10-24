@@ -324,7 +324,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	firstLoop := false
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
 	currentSide.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
-	// fmt.Println( "Voltage: ", voltage )
+	fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
 		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
