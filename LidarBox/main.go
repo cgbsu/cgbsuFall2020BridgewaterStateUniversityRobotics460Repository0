@@ -370,6 +370,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
+			fmt.Println( "HERE" )
 			currentSide.MeasureInitialDistance( robot )
 		} else if currentSide.measuredSide == false {
 			deltaTime := 0.0
