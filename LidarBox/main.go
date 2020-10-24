@@ -357,7 +357,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	for _, side := range sides {
 		side.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
-	var ticker *Time.ticker
+	var ticker *time.ticker
 	currentSideIndex := 0
 	currentSide := &sides[ currentSideIndex ]
 	var previousTime time.Time
