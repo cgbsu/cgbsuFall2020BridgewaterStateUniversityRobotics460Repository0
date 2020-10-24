@@ -246,6 +246,7 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 }
 
 func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
+	fmt.Println( "HERE" )
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
 			self.goalDistanceCalculator.AddSample( robot.lidarReading )
@@ -370,7 +371,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
-			fmt.Println( "HERE" )
 			currentSide.MeasureInitialDistance( robot )
 		} else if currentSide.measuredSide == false {
 			deltaTime := 0.0
