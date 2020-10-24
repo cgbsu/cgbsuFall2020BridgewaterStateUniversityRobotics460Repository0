@@ -353,7 +353,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	const LoopRuntimeConstant = time.Millisecond
 	robot := NewRobot( gopigo3, lidarSensor )
 	const MaxSideConstant = 4
-	var sides [ MaxSideConstant ]Side
+	sides := new( [ MaxSideConstant ]Side )
 	for _, side := range sides {
 		side.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
