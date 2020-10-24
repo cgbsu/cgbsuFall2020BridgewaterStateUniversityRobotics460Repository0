@@ -345,7 +345,6 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 func ( self *Side ) Reset( robot *Robot ) bool {
 	if self.needsToTurn == true {
 		if self.turnResetCount < MaxTurnRestConstant {
-			fmt.Println( "TURNING" )
 			robot.Move( -100, -50 )
 			self.turnResetCount += 1
 		} else {
