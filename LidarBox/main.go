@@ -167,7 +167,7 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
-	_, theta := CalculateArcData( robot.leftDps, robot.rightDps )
+	// _, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if direction == Forward {
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
