@@ -18,10 +18,21 @@ import (
 	* : Second goal, measure full box.
 */
 
+
+type QuantativeDirection int
+
+const( 
+	Left QuantativeDirection = 0
+	Right = 1
+	Forward = 2
+)
+
 type Robot struct {
 	gopigo3 *g.Driver
 	lidarSensor *i2c.LIDARLiteDriver
 	lidarReading, leftDps, rightDps int
+	lastDirection, currentDirection QuantativeDirection
+	startTimeTravelingWithDps time.Time
 }
 
 func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
@@ -42,18 +53,51 @@ const RobotWheelRadiusConstant = 6.5
 const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
-func ( self *Robot ) UniformMove( dps int ) {
+func ( self *Robot ) UniformMove( dps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
 	self.rightDps = dps
+	self.startTimeTravelingWithDps = time.Now()
+	return self.ChangeDirection( Forward )
 }
 
-func ( self *Robot ) Move( leftDps int, rightDps int ) {
+func ( self *Robot ) Move( leftDps int, rightDps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
+	changedDirection := false
+	if math.Abs( leftDps ) > math.Abs( rightDps ) {
+		changedDirection = self.ChangeDirection( Left )
+	} else if math.Abs( leftDps ) == math.Abs( rightDps ) {
+		if leftDps == -rightDps {
+			if leftDps < 0 {
+				changedDirection = self.ChangeDirection( Left )
+			} else {
+				changedDirection = self.ChangeDirection( Right )
+			}
+		} else {
+			changedDirection = self.ChangeDirection( Forward )
+		}
+	} else {
+		changedDirection = self.ChangeDirection( Right )
+	}
 	self.leftDps = leftDps
 	self.rightDps = rightDps
+	self.startTimeTravelingWithDps = time.Now()
+	return changedDirection
+}
+
+func ( self *Robot ) ChangeDirection( to QuantativeDirection ) bool {
+	if self.currentDirection != to {
+		self.lastDirection = self.currentDirection
+		self.currentDirection = to
+		return true
+	}
+	return false
+}
+
+func ( self *Robot ) TimeTraveledWithDps() bool {
+	return time.Since( self.startTimeTravelingWithDps ).Seconds()
 }
 
 func ( self *Robot ) ReadLidar() int {
@@ -88,14 +132,30 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	return radius, theta
 }
 
-func CalculateTraveledBoxDistance( beginningLidarReading, endingLidarReading int, leftDps, rightDps int ) float64 {
-	radius, theta := CalculateArcData( leftDps, rightDps )
-	beginSide := radius + float64( beginningLidarReading )
+func CalculateTraveledArcBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
+	beginSide := radius + float64( robot.lidarReading )
 	endSide := radius + float64( endingLidarReading )
 	fmt.Println( "beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
 	fmt.Println( "Result: ", result )
+	return result
+}
+
+func CalculateTraveledLineBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+	//Pythagorean theorem, delta distance from box
+	return math.Sqrt( Math.Pow( float64( endingLidarReading - robot.lidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
+}
+
+func CalculateTraveledBoxDistance( endingLidarReading int, robot *Robot ) float64 {
+	result := 0.0
+	if robot.leftDps == robot.rightDps {
+		result = CalculateTraveledLineBoxDistance( endingLidarReading, robot )
+		fmt.Println( "Line calc ", result )
+	} else {
+		result = CalculateTraveledArcBoxDistance( endingLidarReading, robot )
+	}
 	return result
 }
 
@@ -131,14 +191,6 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 	return self.samples >= self.desiredSampleCount
 }
 
-type QuantativeDirection int
-
-const( 
-	Left QuantativeDirection = 0
-	Right = 1
-	Forward = 2
-)
-
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
@@ -168,6 +220,7 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 			if self.goalDistanceCalculator.AtDesiredSampleCount() {
 				self.goalDistance = self.goalDistanceCalculator.CalculateAverage()
 				self.goalDistanceFound = true
+				self.previousLidarReading = self.goalDistance
 			}
 			robot.UniformMove( self.initialMeasuringSpeed )
 		}
@@ -194,35 +247,24 @@ func ( self *Side ) TurnedCorner() bool {
 	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
-func ( self *Side ) ChangeDirection( to QuantativeDirection ) bool {
-	if self.currentDirection != to {
-		self.lastDirection = self.currentDirection
-		self.currentDirection = to
-		return true
-	}
-	return false
-}
-
 func ( self* Side ) AddToTotalDistance( robot *Robot ) {
-	self.totalDistance += CalculateTraveledBoxDistance( self.previousLidarReading, robot.lidarReading, robot.leftDps, robot.rightDps )
+	self.totalDistance += CalculateTraveledBoxDistance( self.previousLidarReading, robot )
+	self.previousLidarReading = robot.lidarReading
 }
 
 func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	changedDirection := false
 	if robot.lidarReading > self.goalDistance {
-		changedDirection = self.ChangeDirection( Left )
 		//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
-		robot.Move( -100, -50 )
+		changedDirection = robot.Move( -100, -50 )
 		self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 	} else {
 		self.ClearCornerTurnAngle()
 		if robot.lidarReading < self.goalDistance {
-			changedDirection = self.ChangeDirection( Right )
 			//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
-			robot.Move( -50, -100 )
+			changedDirection = robot.Move( -50, -100 )
 		} else {
-			changedDirection = self.ChangeDirection( Forward )
-			robot.UniformMove( -100 )
+			changedDirection = robot.UniformMove( -100 )
 			//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 		}
 	}
