@@ -54,7 +54,6 @@ const StartDistanceConstant = 20//29.4
 // const OneFootInCentimetersRoundUpConstant = 30
 
 func ( self *Robot ) UniformMove( dps int ) bool {
-	fmt.Println( dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
@@ -355,8 +354,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	robot := NewRobot( gopigo3, lidarSensor )
 	const MaxSideConstant = 4
 	sides := new( [ MaxSideConstant ]Side )
-	for _, side := range sides {
-		side.InitializeSide( InitialSpeed, InitialMeasuringSpeed )
+	for index, _ := range sides {
+		side[ index ].InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
 	// var ticker *time.Ticker
 	currentSideIndex := 0
