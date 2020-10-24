@@ -360,6 +360,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
+
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
