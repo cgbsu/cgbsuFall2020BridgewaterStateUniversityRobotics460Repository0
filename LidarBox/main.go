@@ -132,6 +132,10 @@ func DpsToDistance( dps int ) float64 {
 func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	leftDistance := float64( DpsToDistance( leftDps ) )
 	rightDistance := float64( DpsToDistance( rightDps ) )
+	if leftDistance == rightDistance {
+		fmt.Println( "ARC DATA Sent me the wrong thing! Sending back this distance" )
+		return leftDistance
+	}
 	sidePolarity := 0.0
 	if sidePolarity = -1.0; leftDistance > rightDistance {
 		sidePolarity = 1.0
