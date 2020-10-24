@@ -62,13 +62,20 @@ func ( self *Robot ) UniformMove( dps int ) bool {
 	return self.ChangeDirection( Forward )
 }
 
-func ( self *Robot ) Move( leftDps int, rightDps int ) bool {
+func Abs( number int ) {
+	if number < 0 {
+		return -number
+	}
+	return number
+}
+
+func ( self *Robot ) Move( leftDps, rightDps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
 	changedDirection := false
-	if math.Abs( leftDps ) > math.Abs( rightDps ) {
+	if math.Abs( leftDps ) > Abs( rightDps ) {
 		changedDirection = self.ChangeDirection( Left )
-	} else if math.Abs( leftDps ) == math.Abs( rightDps ) {
+	} else if Abs( leftDps ) == Abs( rightDps ) {
 		if leftDps == -rightDps {
 			if leftDps < 0 {
 				changedDirection = self.ChangeDirection( Left )
