@@ -203,6 +203,8 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 	return self.samples >= self.desiredSampleCount
 }
 
+
+const TurnTolerence = 3
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
@@ -271,14 +273,14 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	changedDirection := false
 	self.readyToTurnSamples.AddSample( robot.lidarReading )
 	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
-		self.readyToTurnSamples.Clear()
-		if robot.lidarReading > self.goalDistance {
+		averageSample := self.readyToTurnSamples.CalculateAverage()
+		if averageSample > self.goalDistance {
 			//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			changedDirection = robot.Move( -100, -50 )
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 		} else {
 			// self.ClearCornerTurnAngle()
-			if robot.lidarReading < self.goalDistance {
+			if averageSample < self.goalDistance {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 				changedDirection = robot.Move( -50, -100 )
@@ -287,6 +289,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 				//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			}
 		}
+		self.readyToTurnSamples.Clear()
 	} else {
 		robot.ContinueMoving()
 	}
