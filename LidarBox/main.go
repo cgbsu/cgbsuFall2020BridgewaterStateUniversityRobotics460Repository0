@@ -365,12 +365,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
 	fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
-		// fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
+		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 	gobot.Every( time.Millisecond, func() {
-		if currentSide == nil {
-			fmt.Println( "ADSADADAS" )
-		}
 		robot.ReadLidar()
 		if currentSide.goalDistanceFound == false {
 			currentSide.MeasureInitialDistance( robot )
@@ -389,8 +386,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			fmt.Println( "Side distance ", currentSide.totalDistance )
 			gopigo3.Halt()
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
+			fmt.Println( "NEXT SIDE" )
 			currentSideIndex += 1
-			currentSide = & sides[ currentSideIndex ]
+			currentSide = &sides[ currentSideIndex ]
 		} else {
 			for _, side := range sides {
 				fmt.Println( "Side Distance ", side.totalDistance )
