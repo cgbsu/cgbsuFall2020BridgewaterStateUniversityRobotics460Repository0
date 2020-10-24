@@ -75,7 +75,6 @@ func ( self *Robot ) ContinueMoving() {
 }
 
 func ( self *Robot ) Move( leftDps, rightDps int ) bool {
-	fmt.Println( "DPS ", leftDps, " ", rightDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
 	changedDirection := false
@@ -399,7 +398,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			previousTime = time.Now()
 		} else if currentSide.Reset( robot ) == false {
 			fmt.Println( "Side distance ", currentSide.totalDistance )
-			gopigo3.Halt()
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
 			fmt.Println( "NEXT SIDE" )
 			currentSideIndex += 1
@@ -409,6 +407,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				fmt.Println( "Side Distance ", side.totalDistance )
 			}
 			fmt.Println( "DONE!" )
+			gopigo3.Halt()
 			// ticker.Stop()
 		}
 	} )
