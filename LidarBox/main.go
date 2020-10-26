@@ -181,7 +181,7 @@ func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
-const MultiplierConstant = 1000.0
+const MultiplierConstant = 10000.0
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
