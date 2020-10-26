@@ -350,9 +350,9 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 
 func ( self *Side ) Reset( robot *Robot ) bool {
 	if self.needsToTurn == true {
-		if self.turnResetCount < MaxTurnRestConstant {
+		if robot.lidarReading < OutOfBoundsDistanceConstant {//self.turnResetCount < MaxTurnRestConstant {
 			robot.Move( -100, -50 )
-			self.turnResetCount += 1
+			// self.turnResetCount += 1
 		} else {
 			self.needsToTurn = false
 		}
