@@ -235,7 +235,7 @@ const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
 const TurnSamplesConstant = 10
 const MaxLeftTurnsConstant = 25
-const ResetCountMaximumConstant = 3
+const ResetCountMaximumConstant = 30
 const MaxTurnRestConstant = 300 //200
 
 type Side struct { 
