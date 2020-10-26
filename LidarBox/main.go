@@ -160,7 +160,7 @@ func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) f
 
 func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	//Pythagorean theorem, delta distance from box
-	fmt.Println( "LINE CALC distance ", robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ) )
+	fmt.Println( "LINE CALC distance ", robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), " Distance ", DpsToDistance( robot.leftDps ), " Time ", robot.TimeTraveledWithDps() )
 	return math.Sqrt( math.Pow( float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
 }
 
