@@ -190,10 +190,10 @@ func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direc
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
 	} else if direction == Left {
-		result = MultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Inverted calc ", result )
 	} else {
-		result = MultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 //		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Arc calc ", result )
 	}
