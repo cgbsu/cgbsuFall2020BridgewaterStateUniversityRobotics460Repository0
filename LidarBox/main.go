@@ -180,10 +180,10 @@ func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direc
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
 	} else if direction == Left {
-		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
+		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Inverted calc ", result )
 	} else {
-		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
+		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 //		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Arc calc ", result )
 	}
@@ -351,12 +351,8 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 func ( self *Side ) Reset( robot *Robot ) bool {
 	if self.needsToTurn == true {
 		if self.turnResetCount < MaxTurnRestConstant {
-			if robot.lidarReading >= OutOfBoundsDistanceConstant {
-				robot.Move( -100, -50 )
-				self.turnResetCount += 1
-			} else {
-				self.needsToTurn = false
-			}
+			robot.Move( -100, -50 )
+			self.turnResetCount += 1
 		} else {
 			self.needsToTurn = false
 		}
