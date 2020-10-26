@@ -182,7 +182,7 @@ func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 }
 
 const ArcMultiplierConstant = 1000.0
-const LineMultiplierConstant = 2.3
+const LineMultiplierConstant = 3.8//.3
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
