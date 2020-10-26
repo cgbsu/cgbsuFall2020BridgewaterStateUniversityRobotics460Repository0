@@ -174,7 +174,7 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 }
 
 func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
-	radius, theta = CalculateArcData( robot.leftDps, robot.rightDps )
+	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	return 2.0 * raidus * math.Sin( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
