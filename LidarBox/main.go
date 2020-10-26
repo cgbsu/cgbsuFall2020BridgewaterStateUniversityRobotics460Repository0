@@ -150,6 +150,10 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 
 func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
+	if theta == 0.0 {
+		fmt.Println( "ORIGINAL Returning result" )
+		return radius
+	}
 	beginSide := radius + float64( robot.lidarReading )
 	endSide := radius + float64( beginingLidarReading )
 	//Law of cosines//
