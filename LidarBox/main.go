@@ -181,7 +181,7 @@ func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
-const MultiplierConstant = 5000.0
+const ArcMultiplierConstant = 5000.0
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
@@ -297,7 +297,7 @@ func ( self *Side ) TurnedCorner() bool {
 }
 
 func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QuantativeDirection ) {
-	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	self.totalDistance += ( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
 
