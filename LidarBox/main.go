@@ -181,13 +181,14 @@ func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
-const ArcMultiplierConstant = 5000.0
+const ArcMultiplierConstant = 1000.0
+const LineMultiplierConstant = 2.3
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
 	// _, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if direction == Forward {
-		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
+		result = LineMultiplierConstant * CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
 	} else if direction == Left {
 		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
