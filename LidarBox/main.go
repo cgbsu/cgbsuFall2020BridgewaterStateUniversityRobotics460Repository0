@@ -133,7 +133,7 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	leftDistance := float64( DpsToDistance( leftDps ) )
 	rightDistance := float64( DpsToDistance( rightDps ) )
 	if leftDistance == rightDistance {
-		fmt.Println( "ARC DATA Sent me the wrong thing! Sending back this distance" )
+		// fmt.Println( "ARC DATA Sent me the wrong thing! Sending back this distance" )
 		return leftDistance, 0.0
 	}
 	sidePolarity := 0.0
@@ -144,21 +144,21 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
 	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( math.Pow( math.Cos( theta ), 2.0 ) - 1 ) )
 	radius := math.Cos( theta ) * sidePolarity * magnitude
-	fmt.Println( "ARC DATA leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
+	// fmt.Println( "ARC DATA leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
 	return radius, theta
 }
 
 func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if theta == 0.0 {
-		fmt.Println( "ORIGINAL Returning result" )
+		// fmt.Println( "ORIGINAL Returning result" )
 		return radius
 	}
 	beginSide := radius + float64( robot.lidarReading )
 	endSide := radius + float64( beginingLidarReading )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
-	fmt.Println( "ORIGINAL beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius, " result ", result )
+	// fmt.Println( "ORIGINAL beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius, " result ", result )
 	return result
 }
 
@@ -169,7 +169,7 @@ func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) 
 }
 
 func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
-	fmt.Println( "INVERTED" )
+	// fmt.Println( "INVERTED" )
 	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
 }
 
@@ -365,7 +365,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
-const ErrorConstant = 2.0
+const ErrorConstant = 4.0
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
