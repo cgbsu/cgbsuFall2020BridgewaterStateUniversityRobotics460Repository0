@@ -365,6 +365,8 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
+const ErrorConstant = 2.0
+
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
 	const InitialSpeed = -180
@@ -402,14 +404,14 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
 		} else if currentSide.Reset( robot ) == false {
-			fmt.Println( "Side distance ", currentSide.totalDistance )
+			fmt.Println( "Side distance ", currentSide.totalDistance * ErrorConstant )
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
 			fmt.Println( "NEXT SIDE" )
 			currentSideIndex += 1
 			currentSide = &sides[ currentSideIndex ]
 		} else {
 			for _, side := range sides {
-				fmt.Println( "Side Distance ", side.totalDistance )
+				fmt.Println( "Side Distance ", side.totalDistance * ErrorConstant )
 			}
 			fmt.Println( "DONE!" )
 			gopigo3.Halt()
