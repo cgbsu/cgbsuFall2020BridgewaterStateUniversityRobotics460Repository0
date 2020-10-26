@@ -173,6 +173,11 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
 }
 
+func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
+	radius, theta = CalculateArcData( robot.leftDps, robot.rightDps )
+	return 2.0 * raidus * math.Sin( theta / 2.0 ) * robot.TimeTraveledWithDps()
+}
+
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
 	// _, theta := CalculateArcData( robot.leftDps, robot.rightDps )
@@ -180,10 +185,10 @@ func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direc
 		result = CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Line calc ", result )
 	} else if direction == Left {
-		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		result = LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Inverted calc ", result )
 	} else {
-		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		result = LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 //		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Arc calc ", result )
 	}
