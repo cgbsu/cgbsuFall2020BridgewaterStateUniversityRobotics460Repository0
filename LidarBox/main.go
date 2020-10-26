@@ -318,7 +318,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 
 func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	//fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
-	fmt.Println( "Turn left count, ", self.turnLeftCount )
+	//fmt.Println( "Turn left count, ", self.turnLeftCount )
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false && self.turnLeftCount < MaxLeftTurnsConstant {
 		if robot.lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
