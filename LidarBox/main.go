@@ -164,8 +164,9 @@ func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) f
 
 func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	//Pythagorean theorem, delta distance from box
-	fmt.Println( "LINE CALC distance ", robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), " Distance ", DpsToDistance( robot.leftDps ), " Time ", robot.TimeTraveledWithDps() )
-	return math.Sqrt( math.Pow( float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( robot.TimeTraveledWithDps() * DpsToDistance( robot.leftDps ), 2.0 ) )
+	time := robot.TimeTraveledWithDps()
+	// fmt.Println( "LINE CALC distance ", time * DpsToDistance( robot.leftDps ), " Distance ", DpsToDistance( robot.leftDps ), " Time ", time )
+	return math.Sqrt( math.Pow( float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( time * DpsToDistance( robot.leftDps ), 2.0 ) )
 }
 
 func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
@@ -175,6 +176,8 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 
 func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
+	time := robot.TimeTraveledWithDps()
+	fmt.Println( "r ", radius, " t ", theta, " time ", time )
 	return 2.0 * radius * math.Sin( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
