@@ -406,6 +406,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		} else if currentSide.Reset( robot ) == false {
 			fmt.Println( "Side distance ", currentSide.totalDistance * ErrorConstant )
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
+			if currentSide.totalDistance == 0 {
+				currentSide.totalDistance = currentSide.AddToTotalDistance( robot, robot.Forward )
+			}
 			fmt.Println( "NEXT SIDE" )
 			currentSideIndex += 1
 			currentSide = &sides[ currentSideIndex ]
