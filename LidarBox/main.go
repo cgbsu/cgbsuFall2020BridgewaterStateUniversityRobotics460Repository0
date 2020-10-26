@@ -178,7 +178,7 @@ func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	time := robot.TimeTraveledWithDps()
 	fmt.Println( "r ", radius, " t ", theta, " time ", time )
-	return 2.0 * radius * math.Sin( theta / 2.0 ) * robot.TimeTraveledWithDps()
+	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
