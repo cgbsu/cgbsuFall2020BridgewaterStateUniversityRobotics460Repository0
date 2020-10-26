@@ -371,7 +371,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
-const ErrorConstant = 1.0 / ( 2.43 )
+const ErrorConstant = 1.0 // 1.0 / ( 2.43 )
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
