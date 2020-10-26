@@ -183,7 +183,8 @@ func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direc
 		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Inverted calc ", result )
 	} else {
-		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
+		result = CalculateTraveledInvertedArcBoxDistance( beginingLidarReading, robot )
+//		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
 		fmt.Println( "Arc calc ", result )
 	}
 	return result
