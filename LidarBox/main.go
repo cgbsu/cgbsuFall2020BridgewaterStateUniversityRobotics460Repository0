@@ -234,7 +234,7 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 
 const TurnTolerenceConstant = 3
 const MaxInitializationSamplesConstant = 10
-const OutOfBoundsDistanceConstant = 40
+const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0
 const TurnSamplesConstant = 10
@@ -306,7 +306,7 @@ func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QualativeDi
 	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
 	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
 	//self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
-	self.totalDistance += ( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
 
