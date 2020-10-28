@@ -302,7 +302,11 @@ func ( self *Side ) TurnedCorner() bool {
 
 //When direction is changed, use this to update the side length measurement.//
 func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QualativeDirection ) {
-	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
+	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
+	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
+	//self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	self.totalDistance += ( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
 
@@ -314,21 +318,26 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
 		averageSample := self.readyToTurnSamples.CalculateAverage()
 		deltaSample := averageSample - self.goalDistance
+		/*Considered that this case as well as the next 2 in the else block should set cahgned direciton to true to lock
+		the time the robot keeps track of that it traveled to new calls to these functions.*/
 		if deltaSample > TurnTolerenceConstant {
 			changedDirection = robot.Move( -100, -50 )
 			//The angle self.TurnedCorner() uses to determine if we have made about a 90 degree turn.//
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 			self.turnLeftCount += 1
+			/////////////
 			changedDirection = true
 		} else {
 			if deltaSample < -TurnTolerenceConstant {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				robot.Move( -50, -100 )
 				self.turnLeftCount -= 1
-				changedDirection = true
+			/////////////
+			changedDirection = true
 			} else {
 				robot.UniformMove( -100 )
-				changedDirection = true
+			/////////////
+			changedDirection = true
 			}
 		}
 		self.readyToTurnSamples.Clear()
@@ -390,7 +399,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
-const ErrorConstant = 1.0//.5
+const ErrorConstant = .5
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
@@ -447,9 +456,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSideIndex += 1
 			/*Address problem where the last measurment is not counted, this may be for the best that it is not counted in some cases 
 			as it can include part of the turn to the next side.*/
-			//if robotEndDirection == Forward {
-			//	currentSide.AddToTotalDistance( robot, robotEndDirection )
-			//}
+			//currentSide.AddToTotalDistance( robot, robotEndDirection )
 			currentSide = &sides[ currentSideIndex ]
 		} else {
 			//I found I got better readings when I averaged what I got for the two sides, at least proporational readings.//
