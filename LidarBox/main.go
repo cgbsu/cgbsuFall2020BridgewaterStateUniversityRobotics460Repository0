@@ -181,7 +181,7 @@ func CalculateTraveledChord( beginingLidarReading int, robot *Robot ) float64 {
 }
 
 //Error constants.//
-const ArcMultiplierConstant = 1.0//1000.0
+const ArcMultiplierConstant = 0.0//1000.0
 const LineMultiplierConstant = 1.0//3.8
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QualativeDirection ) float64 {
