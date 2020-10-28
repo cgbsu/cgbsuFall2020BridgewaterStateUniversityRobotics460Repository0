@@ -363,7 +363,7 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
 		} else {
 			self.outOfBoundsDistance.Clear()
-			previousDirection := robot.currentDirection
+			//previousDirection := robot.currentDirection
 			if self.Creep( robot, loopRuntimeInSeconds ) == true {
 				fmt.Println( "Change direction" )
 				// self.AddToTotalDistance( robot, previousDirection )
