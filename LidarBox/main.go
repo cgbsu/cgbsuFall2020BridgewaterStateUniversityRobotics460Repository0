@@ -187,7 +187,7 @@ const LineMultiplierConstant = 1.0//3.8
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QualativeDirection ) float64 {
 	result := 0.0
 	if direction == Forward {
-		result = LineMultiplierConstant * CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
+		result = math.Abs( LineMultiplierConstant * CalculateTraveledLineBoxDistance( beginingLidarReading, robot ) )
 	} else if direction == Left {
 		result = ArcMultiplierConstant * CalculateTraveledChord( beginingLidarReading, robot )
 	} else {
@@ -306,7 +306,7 @@ func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QualativeDi
 	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
 	/////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///////////////////////////////
 	//self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
-	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	self.totalDistance += ( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
 
