@@ -319,6 +319,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 			//The angle self.TurnedCorner() uses to determine if we have made about a 90 degree turn.//
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 			self.turnLeftCount += 1
+			changedDirection = true
 		} else {
 			if deltaSample < -TurnTolerenceConstant {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
