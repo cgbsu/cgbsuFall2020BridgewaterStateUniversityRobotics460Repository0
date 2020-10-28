@@ -50,7 +50,7 @@ func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
 const RobotWidthConstant = 13
 const RobotWheelRadiusConstant = 6.5
 
-const StartDistanceConstant = 30//40
+const StartDistanceConstant = 40
 
 func ( self *Robot ) UniformMove( dps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
@@ -234,7 +234,7 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 
 const TurnTolerenceConstant = 3
 const MaxInitializationSamplesConstant = 10
-const OutOfBoundsDistanceConstant = 30//50
+const OutOfBoundsDistanceConstant = 41
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0
 const TurnSamplesConstant = 10
