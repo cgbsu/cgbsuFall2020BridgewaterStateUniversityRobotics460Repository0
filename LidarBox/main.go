@@ -377,7 +377,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
-const ErrorConstant = 1.0 // 1.0 / ( 2.43 )
+const ErrorConstant = .5 // 1.0 / ( 2.43 )
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
@@ -427,9 +427,10 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSide.AddToTotalDistance( robot, robotEndDirection )
 			currentSide = &sides[ currentSideIndex ]
 		} else {
-			for _, side := range sides {
-				fmt.Println( "Side Distance ", side.totalDistance * ErrorConstant )
-			}
+			pair0 := ( ( side[ 0 ].totalDistance * ErrorConstant ) + ( side[ 2 ] * ErrorConstant ) ) / 2.0
+			pair1 := ( ( side[ 1 ].totalDistance * ErrorConstant ) + ( side[ 3 ] * ErrorConstant ) ) / 2.0
+			fmt.Println( "Sides first and third side length ", pair0 )
+			fmt.Println( "Sides second and fourth side length ", pair1 )
 			fmt.Println( "DONE!" )
 			gopigo3.Halt()
 			// ticker.Stop()
