@@ -234,7 +234,7 @@ func ( self *Average ) AtDesiredSampleCount() bool {
 
 const TurnTolerenceConstant = 3
 const MaxInitializationSamplesConstant = 10
-const OutOfBoundsDistanceConstant = 41
+const OutOfBoundsDistanceConstant = 40
 const MaxOutOfBoundSamplesConstant = 5
 const CornerTurnAngleConstant = math.Pi / 10.0
 const TurnSamplesConstant = 10
