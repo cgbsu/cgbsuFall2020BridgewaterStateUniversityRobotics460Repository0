@@ -298,7 +298,7 @@ func ( self *Side ) TurnedCorner() bool {
 }
 
 func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QuantativeDirection ) {
-	self.totalDistance += ( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
+	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
 
