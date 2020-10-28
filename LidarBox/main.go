@@ -177,7 +177,6 @@ func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *R
 //Calculates the "chord" of the robot's arc.
 func CalculateTraveledChord( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
-	time := robot.TimeTraveledWithDps()
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
@@ -323,10 +322,12 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 		} else {
 			if deltaSample < -TurnTolerenceConstant {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
-				changedDirection = robot.Move( -50, -100 )
+				robot.Move( -50, -100 )
 				self.turnLeftCount -= 1
+				changedDirection = true
 			} else {
-				changedDirection = robot.UniformMove( -100 )
+				robot.UniformMove( -100 )
+				changedDirection = true
 			}
 		}
 		self.readyToTurnSamples.Clear()
