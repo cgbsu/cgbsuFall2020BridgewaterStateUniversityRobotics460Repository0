@@ -447,9 +447,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSideIndex += 1
 			/*Address problem where the last measurment is not counted, this may be for the best that it is not counted in some cases 
 			as it can include part of the turn to the next side.*/
-			if robotEndDirection == Forward {
-				currentSide.AddToTotalDistance( robot, robotEndDirection )
-			}
+			//if robotEndDirection == Forward {
+			//	currentSide.AddToTotalDistance( robot, robotEndDirection )
+			//}
 			currentSide = &sides[ currentSideIndex ]
 		} else {
 			//I found I got better readings when I averaged what I got for the two sides, at least proporational readings.//
