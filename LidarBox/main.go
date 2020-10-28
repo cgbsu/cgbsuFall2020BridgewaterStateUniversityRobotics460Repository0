@@ -181,8 +181,8 @@ func CalculateTraveledChord( beginingLidarReading int, robot *Robot ) float64 {
 }
 
 //Error constants.//
-const ArcMultiplierConstant = 1000.0
-const LineMultiplierConstant = 3.8
+const ArcMultiplierConstant = 1.0//1000.0
+const LineMultiplierConstant = 1.0//3.8
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QualativeDirection ) float64 {
 	result := 0.0
@@ -487,5 +487,6 @@ func main() {
 		gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
 		gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
 		robot.Stop()
+		gopigo3.Halt()
 	}()
 }
