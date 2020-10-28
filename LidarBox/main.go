@@ -401,7 +401,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 
-	var robotEndDirection QuantativeDirection := Forward
+	var robotEndDirection QuantativeDirection = Forward
 
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
