@@ -401,7 +401,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 
-	robotEndDirection :=Forward
+	robotEndDirection := Forward
 
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
@@ -416,7 +416,7 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
 			//fmt.Println( "Delta Time ", deltaTime )
-			robotEndDirection = robot.currentDirection
+			robotEndDirection = QuantativeDirection( robot.currentDirection )
 			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
 			previousTime = time.Now()
 		} else if currentSide.Reset( robot ) == false {
