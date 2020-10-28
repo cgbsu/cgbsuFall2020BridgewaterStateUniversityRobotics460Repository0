@@ -329,7 +329,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 			/////////////
 			//changedDirection = true
 		} else {
-			if deltaSample < -TurnTolerenceConstant && self.turnLeftCount >= ( -MaxLeftTurnsConstant - 10 ) {
+			if deltaSample < -TurnTolerenceConstant && self.turnLeftCount >= ( -MaxLeftTurnsConstant + 10 ) {
 				self.AddToTotalDistance( robot, robot.currentDirection )
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				robot.Move( -50, -100 )
