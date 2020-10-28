@@ -329,7 +329,7 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 			/////////////
 			//changedDirection = true
 		} else {
-			if deltaSample < -TurnTolerenceConstant {
+			if deltaSample < -TurnTolerenceConstant && self.turnLeftCount >= ( -MaxLeftTurnsConstant - 10 ) {
 				self.AddToTotalDistance( robot, robot.currentDirection )
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				robot.Move( -50, -100 )
@@ -463,8 +463,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSide = &sides[ currentSideIndex ]
 		} else {
 			//I found I got better readings when I averaged what I got for the two sides, at least proporational readings.//
-			pair0 := ( ( sides[ 0 ].totalDistance * ErrorConstant ) + ( sides[ 2 ].totalDistance * ErrorConstant ) ) / 2.0
-			pair1 := ( ( sides[ 1 ].totalDistance * ErrorConstant ) + ( sides[ 3 ].totalDistance * ErrorConstant ) ) / 2.0
+			pair0 := -20.0 + ( ( sides[ 0 ].totalDistance * ErrorConstant ) + ( sides[ 2 ].totalDistance * ErrorConstant ) ) / 2.0
+			pair1 := -20.0 + ( ( sides[ 1 ].totalDistance * ErrorConstant ) + ( sides[ 3 ].totalDistance * ErrorConstant ) ) / 2.0
 			fmt.Println( "Sides first and third side length ", pair0 )
 			fmt.Println( "Sides second and fourth side length ", pair1 )
 			fmt.Println( "DONE!" )
