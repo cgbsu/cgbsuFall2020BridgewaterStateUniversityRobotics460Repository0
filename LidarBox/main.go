@@ -133,7 +133,6 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 	leftDistance := float64( DpsToDistance( leftDps ) )
 	rightDistance := float64( DpsToDistance( rightDps ) )
 	if leftDistance == rightDistance {
-		// fmt.Println( "ARC DATA Sent me the wrong thing! Sending back this distance" )
 		return leftDistance, 0.0
 	}
 	sidePolarity := 0.0
@@ -141,10 +140,11 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 		sidePolarity = 1.0
 	}
 	maxDistance := math.Max( leftDistance, rightDistance )
+	//Angle of turn
 	theta := math.Atan( ( leftDistance - rightDistance ) / RobotWidthConstant )
 	magnitude := math.Sqrt( - math.Pow( maxDistance, 2.0 ) / ( math.Pow( math.Cos( theta ), 2.0 ) - 1 ) )
+	//Turn radius
 	radius := math.Cos( theta ) * sidePolarity * magnitude
-	// fmt.Println( "ARC DATA leftDistance ", leftDistance, " rightDistance ", rightDistance, " theta ", theta, " magnitude ", magnitude, " radius ", radius )
 	return radius, theta
 }
 
@@ -158,26 +158,23 @@ func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) f
 	endSide := radius + float64( beginingLidarReading )
 	//Law of cosines//
 	result := math.Sqrt( math.Pow( beginSide, 2.0 ) + math.Pow( endSide + radius, 2.0 ) - ( 2.0 * beginSide * endSide * math.Cos( theta ) ) )
-	// fmt.Println( "ORIGINAL beginSide ", beginSide, " endSide ", endSide, " theta ", theta, " radius ", radius, " result ", result )
 	return result
 }
 
 func CalculateTraveledLineBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
-	//Pythagorean theorem, delta distance from box
+	//Pythagorean theorem, delta distance from box, and predicted travel time on a straight line
 	time := robot.TimeTraveledWithDps()
-	// fmt.Println( "LINE CALC distance ", time * DpsToDistance( robot.leftDps ), " Distance ", DpsToDistance( robot.leftDps ), " Time ", time )
 	return math.Sqrt( math.Pow( -float64( robot.lidarReading - beginingLidarReading ), 2.0 ) + math.Pow( time * DpsToDistance( robot.leftDps ), 2.0 ) )
 }
 
 func CalculateTraveledInvertedArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
-	// fmt.Println( "INVERTED" )
 	return math.Sqrt( 2.0 * math.Pow( float64( robot.lidarReading ), 2.0 ) ) - math.Sqrt( 2.0 * math.Pow( float64( beginingLidarReading ), 2.0 ) )
 }
 
-func LastDesprateAttempt( beginingLidarReading int, robot *Robot ) float64 {
+//Calculates the "chord" of the robot's arc.
+func CalculateTraveledChord( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	time := robot.TimeTraveledWithDps()
-	fmt.Println( "r ", radius, " t ", theta, " time ", time )
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
@@ -186,17 +183,12 @@ const LineMultiplierConstant = 3.8//.3
 
 func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
 	result := 0.0
-	// _, theta := CalculateArcData( robot.leftDps, robot.rightDps )
 	if direction == Forward {
 		result = LineMultiplierConstant * CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
-		fmt.Println( "Line calc ", result )
 	} else if direction == Left {
-		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
-		fmt.Println( "Inverted calc ", result )
+		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )
 	} else {
-		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )//CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
-//		result = CalculateTraveledArcBoxDistance( beginingLidarReading, robot )
-		fmt.Println( "Arc calc ", result )
+		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )
 	}
 	return result
 }
@@ -238,11 +230,11 @@ const TurnTolerenceConstant = 3
 const MaxInitializationSamplesConstant = 10
 const OutOfBoundsDistanceConstant = 50
 const MaxOutOfBoundSamplesConstant = 5
-const CornerTurnAngleConstant = math.Pi / 10.0 //.24//math.Pi / 2.0//90.0
+const CornerTurnAngleConstant = math.Pi / 10.0
 const TurnSamplesConstant = 10
 const MaxLeftTurnsConstant = 25
 const ResetCountMaximumConstant = 30
-const MaxTurnRestConstant = 300 //200
+const MaxTurnRestConstant = 300
 
 type Side struct { 
 	needsToTurn, foundBox, goalDistanceFound, measuredSide bool
@@ -283,9 +275,7 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 
 func ( self *Side ) UpdateCornerTurnAngle( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	_, angle := CalculateArcData( robot.leftDps, robot.rightDps )
-	// fmt.Println( "Updating corner angle with angle ", angle, " loopRuntimeInSeconds", loopRuntimeInSeconds, " self.cornerTurnAngle", self.cornerTurnAngle )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
-	// fmt.Println( "CornerTurnAngle ", self.cornerTurnAngle )
 	return self.TurnedCorner()
 }
 
@@ -308,21 +298,17 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
 		averageSample := self.readyToTurnSamples.CalculateAverage()
 		deltaSample := averageSample - self.goalDistance
-		if deltaSample > TurnTolerenceConstant { // averageSample > self.goalDistance {
-			//fmt.Println( "Greater lr: ", robot.lidarReading, " gd: ", self.goalDistance )
+		if deltaSample > TurnTolerenceConstant {
 			changedDirection = robot.Move( -100, -50 )
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 			self.turnLeftCount += 1
 		} else {
-			// self.ClearCornerTurnAngle()
-			if deltaSample < -TurnTolerenceConstant {// averageSample < self.goalDistance {
+			if deltaSample < -TurnTolerenceConstant {
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
-				//fmt.Println( "Less lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 				changedDirection = robot.Move( -50, -100 )
 				self.turnLeftCount -= 1
 			} else {
 				changedDirection = robot.UniformMove( -100 )
-				//fmt.Println( "Equal lr: ", robot.lidarReading, " gd: ", self.goalDistance )
 			}
 		}
 		self.readyToTurnSamples.Clear()
@@ -333,8 +319,6 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 }
 
 func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
-	//fmt.Println( "Turned Corner: ", self.TurnedCorner(), " Corner Turn Angle: ", self.cornerTurnAngle )
-	//fmt.Println( "Turn left count, ", self.turnLeftCount )
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false && self.turnLeftCount < MaxLeftTurnsConstant {
 		if robot.lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
@@ -352,7 +336,6 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 	} else if self.TurnedCorner() == true || self.turnLeftCount >= MaxLeftTurnsConstant {
 		self.measuredSide = true
 	} else {
-		//fmt.Println( "WHAT DO I DO!?" )
 		self.outOfBoundsDistance.Clear()
 		robot.UniformMove( -360 )
 	}
@@ -377,7 +360,7 @@ func ( self *Side ) Reset( robot *Robot ) bool {
 	return false
 }
 
-const ErrorConstant = .5 // 1.0 / ( 2.43 )
+const ErrorConstant = .5
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
@@ -390,7 +373,6 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	for index, _ := range sides {
 		sides[ index ].InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
-	// var ticker *time.Ticker
 	currentSideIndex := 0
 	currentSide := &sides[ currentSideIndex ]
 	var previousTime time.Time
@@ -415,9 +397,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			} else {
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
-			//fmt.Println( "Delta Time ", deltaTime )
 			robotEndDirection = QuantativeDirection( robot.currentDirection )
-			currentSide.MeasureSide( robot, deltaTime ) //, LoopTimeInSecondsConstant )
+			currentSide.MeasureSide( robot, deltaTime )
 			previousTime = time.Now()
 		} else if currentSide.Reset( robot ) == false {
 			fmt.Println( "Side distance ", currentSide.totalDistance * ErrorConstant )
@@ -433,11 +414,9 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			fmt.Println( "Sides second and fourth side length ", pair1 )
 			fmt.Println( "DONE!" )
 			gopigo3.Halt()
-			// ticker.Stop()
 		}
 	} )
 	defer func() {
-		//work.Stop()
 		gopigo3.Halt()
 	}()
 }
