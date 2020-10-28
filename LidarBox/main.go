@@ -321,23 +321,26 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 		/*Considered that this case as well as the next 2 in the else block should set cahgned direciton to true to lock
 		the time the robot keeps track of that it traveled to new calls to these functions.*/
 		if deltaSample > TurnTolerenceConstant {
+			self.AddToTotalDistance( robot, robot.currentDirection )
 			changedDirection = robot.Move( -100, -50 )
 			//The angle self.TurnedCorner() uses to determine if we have made about a 90 degree turn.//
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 			self.turnLeftCount += 1
 			/////////////
-			changedDirection = true
+			//changedDirection = true
 		} else {
 			if deltaSample < -TurnTolerenceConstant {
+				self.AddToTotalDistance( robot, robot.currentDirection )
 				self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 				robot.Move( -50, -100 )
 				self.turnLeftCount -= 1
 			/////////////
-			changedDirection = true
+			//changedDirection = true
 			} else {
+				self.AddToTotalDistance( robot, robot.currentDirection )
 				robot.UniformMove( -100 )
 			/////////////
-			changedDirection = true
+			//changedDirection = true
 			}
 		}
 		self.readyToTurnSamples.Clear()
@@ -363,7 +366,7 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 			previousDirection := robot.currentDirection
 			if self.Creep( robot, loopRuntimeInSeconds ) == true {
 				fmt.Println( "Change direction" )
-				self.AddToTotalDistance( robot, previousDirection )
+				// self.AddToTotalDistance( robot, previousDirection )
 			}
 		}
 	} else if self.outOfBoundsDistance.CalculateAverage() >= OutOfBoundsDistanceConstant {
