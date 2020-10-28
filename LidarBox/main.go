@@ -427,8 +427,8 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			currentSide.AddToTotalDistance( robot, robotEndDirection )
 			currentSide = &sides[ currentSideIndex ]
 		} else {
-			pair0 := ( ( side[ 0 ].totalDistance * ErrorConstant ) + ( side[ 2 ] * ErrorConstant ) ) / 2.0
-			pair1 := ( ( side[ 1 ].totalDistance * ErrorConstant ) + ( side[ 3 ] * ErrorConstant ) ) / 2.0
+			pair0 := ( ( sides[ 0 ].totalDistance * ErrorConstant ) + ( sides[ 2 ].totalDistance * ErrorConstant ) ) / 2.0
+			pair1 := ( ( sides[ 1 ].totalDistance * ErrorConstant ) + ( sides[ 3 ].totalDistance * ErrorConstant ) ) / 2.0
 			fmt.Println( "Sides first and third side length ", pair0 )
 			fmt.Println( "Sides second and fourth side length ", pair1 )
 			fmt.Println( "DONE!" )
