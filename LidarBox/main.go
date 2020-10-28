@@ -19,10 +19,10 @@ import (
 */
 
 
-type QuantativeDirection int
+type QualativeDirection int
 
 const( 
-	Left QuantativeDirection = 0
+	Left QualativeDirection = 0
 	Right = 1
 	Forward = 2
 )
@@ -31,7 +31,7 @@ type Robot struct {
 	gopigo3 *g.Driver
 	lidarSensor *i2c.LIDARLiteDriver
 	lidarReading, leftDps, rightDps int
-	lastDirection, currentDirection QuantativeDirection
+	lastDirection, currentDirection QualativeDirection
 	startTimeTravelingWithDps time.Time
 }
 
@@ -50,14 +50,14 @@ func NewRobot( gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) *Robot {
 const RobotWidthConstant = 13
 const RobotWheelRadiusConstant = 6.5
 
-const StartDistanceConstant = 40//29.4
-// const OneFootInCentimetersRoundUpConstant = 30
+const StartDistanceConstant = 40
 
 func ( self *Robot ) UniformMove( dps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, dps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, dps )
 	self.leftDps = dps
 	self.rightDps = dps
+	//So the amount of time traveling in this direction can be known.//
 	self.startTimeTravelingWithDps = time.Now()
 	return self.ChangeDirection( Forward )
 }
@@ -78,28 +78,31 @@ func ( self *Robot ) Move( leftDps, rightDps int ) bool {
 	self.gopigo3.SetMotorDps( g.MOTOR_LEFT, leftDps )
 	self.gopigo3.SetMotorDps( g.MOTOR_RIGHT, rightDps )
 	changedDirection := false
-	if Abs( leftDps ) > Abs( rightDps ) {
+	if Abs( leftDps ) > Abs( rightDps ) { //Arcing left
 		changedDirection = self.ChangeDirection( Left )
-	} else if Abs( leftDps ) == Abs( rightDps ) {
-		if leftDps == -rightDps {
-			if leftDps < 0 {
+	} else if Abs( leftDps ) == Abs( rightDps ) { //Turning straight or spinning around
+		if leftDps == -rightDps { //Spinning around
+			if leftDps < 0 { //Spinning around left
 				changedDirection = self.ChangeDirection( Left )
-			} else {
+			} else { //Spinning around right
 				changedDirection = self.ChangeDirection( Right )
 			}
-		} else {
+		} else { //Going straight
 			changedDirection = self.ChangeDirection( Forward )
 		}
-	} else {
+	} else { //All thats left is arcing right
 		changedDirection = self.ChangeDirection( Right )
 	}
 	self.leftDps = leftDps
 	self.rightDps = rightDps
+	//So the amount of time traveling in this direction can be known.//
 	self.startTimeTravelingWithDps = time.Now()
 	return changedDirection
 }
 
-func ( self *Robot ) ChangeDirection( to QuantativeDirection ) bool {
+
+//Change the state of currentDirection//
+func ( self *Robot ) ChangeDirection( to QualativeDirection ) bool {
 	if self.currentDirection != to {
 		self.lastDirection = self.currentDirection
 		self.currentDirection = to
@@ -150,8 +153,8 @@ func CalculateArcData( leftDps, rightDps int ) ( float64, float64 ) {
 
 func CalculateTraveledArcBoxDistance( beginingLidarReading int, robot *Robot ) float64 {
 	radius, theta := CalculateArcData( robot.leftDps, robot.rightDps )
+	//We are traveling in a stragiht line if this is the case.//
 	if theta == 0.0 {
-		// fmt.Println( "ORIGINAL Returning result" )
 		return radius
 	}
 	beginSide := radius + float64( robot.lidarReading )
@@ -178,21 +181,25 @@ func CalculateTraveledChord( beginingLidarReading int, robot *Robot ) float64 {
 	return 2.0 * radius * math.Cos( theta / 2.0 ) * robot.TimeTraveledWithDps()
 }
 
+//Error constants.//
 const ArcMultiplierConstant = 1000.0
-const LineMultiplierConstant = 3.8//.3
+const LineMultiplierConstant = 3.8
 
-func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QuantativeDirection ) float64 {
+func CalculateTraveledBoxDistance( beginingLidarReading int, robot *Robot, direction QualativeDirection ) float64 {
 	result := 0.0
 	if direction == Forward {
 		result = LineMultiplierConstant * CalculateTraveledLineBoxDistance( beginingLidarReading, robot )
 	} else if direction == Left {
-		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )
+		result = ArcMultiplierConstant * CalculateTraveledChord( beginingLidarReading, robot )
 	} else {
-		result = ArcMultiplierConstant * LastDesprateAttempt( beginingLidarReading, robot )
+		result = ArcMultiplierConstant * CalculateTraveledChord( beginingLidarReading, robot )
 	}
 	return result
 }
 
+
+/*For averaging measurments, it would be nice if 
+Go had generics so the sample type could be a generic*/
 type Average struct {
 	 buffer, samples, desiredSampleCount int 
 }
@@ -236,14 +243,18 @@ const MaxLeftTurnsConstant = 25
 const ResetCountMaximumConstant = 30
 const MaxTurnRestConstant = 300
 
+
+//All information needed to measure a side of the box.//
 type Side struct { 
 	needsToTurn, foundBox, goalDistanceFound, measuredSide bool
 	readyToTurnSamples, goalDistanceCalculator, outOfBoundsDistance Average
 	turnResetCount, resetCount, turnLeftCount, previousLidarReading, goalDistance, initialSpeed, initialMeasuringSpeed int
 	totalDistance, cornerTurnAngle float64
-	lastDirection, currentDirection QuantativeDirection
+	lastDirection, currentDirection QualativeDirection
 }
 
+/*I have no need of a NewSide function, but if I did it would call this AND allocate memory, 
+seperation of concerns.*/
 func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.goalDistanceCalculator.InitializeAverage( MaxInitializationSamplesConstant )
 	self.outOfBoundsDistance.InitializeAverage( MaxOutOfBoundSamplesConstant )
@@ -254,6 +265,8 @@ func ( self *Side ) InitializeSide( initialSpeed, initialMeasuringSpeed int ) {
 	self.currentDirection = Forward
 }
 
+
+//Determine the goal distance to keep from the box. Returns weather or not the measuremnt has been made//
 func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 	if self.foundBox == true {
 		if self.goalDistanceFound == false {
@@ -273,6 +286,7 @@ func ( self *Side ) MeasureInitialDistance( robot *Robot ) bool {
 	return self.goalDistanceFound
 }
 
+//The "turn angle" is a 90 degree left hand turn. If we have done that, we are on another side of the box.//
 func ( self *Side ) UpdateCornerTurnAngle( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	_, angle := CalculateArcData( robot.leftDps, robot.rightDps )
 	self.cornerTurnAngle += ( angle * loopRuntimeInSeconds )
@@ -287,7 +301,8 @@ func ( self *Side ) TurnedCorner() bool {
 	return math.Abs( self.cornerTurnAngle ) >= CornerTurnAngleConstant
 }
 
-func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QuantativeDirection ) {
+//When direction is changed, use this to update the side length measurement.//
+func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QualativeDirection ) {
 	self.totalDistance += math.Abs( CalculateTraveledBoxDistance( self.previousLidarReading, robot, robotDirection ) )
 	self.previousLidarReading = robot.lidarReading
 }
@@ -295,11 +310,14 @@ func ( self* Side ) AddToTotalDistance( robot *Robot, robotDirection QuantativeD
 func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 	changedDirection := false
 	self.readyToTurnSamples.AddSample( robot.lidarReading )
+	/*Do we have enough samples to average and figure out if we are ready for a change in 
+	direction? Okay, use that average to make that determination. Otherwise keep moving in the same direction.*/
 	if self.readyToTurnSamples.AtDesiredSampleCount() == true {
 		averageSample := self.readyToTurnSamples.CalculateAverage()
 		deltaSample := averageSample - self.goalDistance
 		if deltaSample > TurnTolerenceConstant {
 			changedDirection = robot.Move( -100, -50 )
+			//The angle self.TurnedCorner() uses to determine if we have made about a 90 degree turn.//
 			self.UpdateCornerTurnAngle( robot, loopRuntimeInSeconds )
 			self.turnLeftCount += 1
 		} else {
@@ -319,6 +337,13 @@ func ( self* Side ) Creep( robot *Robot, loopRuntimeInSeconds float64 ) bool {
 }
 
 func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bool {
+	/*If we have not gotten enough samples to establish we are out of bounds 
+	the angle we have turned is insufficiant to say its a new side or 
+	the amount of left turns is too small to say we have turned onto a new side 
+	then move on to continue measuring/moving
+	
+	Otherwise what kind of position are we to measure the rest of the box? Encode that state.
+	*/ 
 	if self.outOfBoundsDistance.AtDesiredSampleCount() == false && self.TurnedCorner() == false && self.turnLeftCount < MaxLeftTurnsConstant {
 		if robot.lidarReading >= OutOfBoundsDistanceConstant {
 			self.outOfBoundsDistance.AddSample( robot.lidarReading )
@@ -342,6 +367,9 @@ func ( self *Side ) MeasureSide( robot *Robot, loopRuntimeInSeconds float64 ) bo
 	return self.measuredSide
 }
 
+
+/*If we have made a discovery of enough "out of bounds sampels" (we are looking at the other 
+side of the room), then we need to turn, make a 90 degree turn. In any case, back up a little.*/
 func ( self *Side ) Reset( robot *Robot ) bool {
 	if self.needsToTurn == true {
 		if self.turnResetCount < MaxTurnRestConstant {
@@ -364,12 +392,16 @@ const ErrorConstant = .5
 
 
 func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver ) {
+	//Constants, and new variables.//
 	const InitialSpeed = -180
 	const InitialMeasuringSpeed = -10
 	const LoopRuntimeConstant = time.Millisecond
+	/*Make the robot instance, makes it easir to pass around information rather than 
+	having a bunch of parameters, even though there is just one instance.*/
 	robot := NewRobot( gopigo3, lidarSensor )
 	const MaxSideConstant = 4
 	sides := new( [ MaxSideConstant ]Side )
+	//Initialize every side using constants.//
 	for index, _ := range sides {
 		sides[ index ].InitializeSide( InitialSpeed, InitialMeasuringSpeed )
 	}
@@ -377,19 +409,21 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	currentSide := &sides[ currentSideIndex ]
 	var previousTime time.Time
 	firstLoop := false
+	//Diagnostic//
 	voltage, voltageErr := gopigo3.GetBatteryVoltage()
 	fmt.Println( "Voltage: ", voltage )
 	if voltageErr != nil {
 		fmt.Println( "RobotMainLoop::Error::Failure reading Voltage: ", voltageErr )
 	}
 
-	var robotEndDirection QuantativeDirection = Forward
+	var robotEndDirection QualativeDirection = Forward
 
 	gobot.Every( time.Millisecond, func() {
 		robot.ReadLidar()
-		if currentSide.goalDistanceFound == false {
+		if currentSide.goalDistanceFound == false { //Have we measured the initial goal distance? No, keep measuring.
 			currentSide.MeasureInitialDistance( robot )
-		} else if currentSide.measuredSide == false {
+		} else if currentSide.measuredSide == false { //Measure the side//
+			//Calculate the delta time for the robot to make calculations.//
 			deltaTime := 0.0
 			if firstLoop == false {
 				previousTime = time.Now()
@@ -397,25 +431,35 @@ func RobotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			} else {
 				deltaTime = time.Since( previousTime ).Seconds()
 			}
-			robotEndDirection = QuantativeDirection( robot.currentDirection )
+			robotEndDirection = QualativeDirection( robot.currentDirection )
+			/*Updates the side's state, no info out needed yet, does send back currentSide.measuredSide however.
+			Really in truth I should have done away with the delta time here and just used the time spent going 
+			in a particular direction, which looking back on it, I think had a bug in that it was not locked to 
+			measuring when the start time for a movement would change.*/
 			currentSide.MeasureSide( robot, deltaTime )
 			previousTime = time.Now()
-		} else if currentSide.Reset( robot ) == false {
+		} else if currentSide.Reset( robot ) == false { //Wait for the robot to reset, in the mean time print out the current measuriment.
 			fmt.Println( "Side distance ", currentSide.totalDistance * ErrorConstant )
 		} else if ( currentSideIndex + 1 ) < MaxSideConstant {
 			fmt.Println( "NEXT SIDE" )
 			currentSideIndex += 1
+			/*Address problem where the last measurment is not counted, this may be for the best that it is not counted in some cases 
+			as it can include part of the turn to the next side.*/
 			currentSide.AddToTotalDistance( robot, robotEndDirection )
 			currentSide = &sides[ currentSideIndex ]
 		} else {
+			//I found I got better readings when I averaged what I got for the two sides, at least proporational readings.//
 			pair0 := ( ( sides[ 0 ].totalDistance * ErrorConstant ) + ( sides[ 2 ].totalDistance * ErrorConstant ) ) / 2.0
 			pair1 := ( ( sides[ 1 ].totalDistance * ErrorConstant ) + ( sides[ 3 ].totalDistance * ErrorConstant ) ) / 2.0
 			fmt.Println( "Sides first and third side length ", pair0 )
 			fmt.Println( "Sides second and fourth side length ", pair1 )
 			fmt.Println( "DONE!" )
+			/*Would call ticker.Stop (the loop is running in a time.Ticker), but I didnt hve time to make 
+			this work properly and it introduced bugs when I did try.*/
 			gopigo3.Halt()
 		}
 	} )
+	//Supposidly the robot will stop when Ctrl+C is pressed.//
 	defer func() {
 		gopigo3.Halt()
 	}()
@@ -434,6 +478,7 @@ func main() {
 		[]gobot.Device{gopigo3, lidarSensor, lightSensor},
 		workerThread)
 	robot.Start()
+	//Hopefully stop when Ctrl+C is pressed.//
 	defer func() { 
 		gopigo3.SetMotorDps( g.MOTOR_LEFT, 0 )
 		gopigo3.SetMotorDps( g.MOTOR_RIGHT, 0 )
